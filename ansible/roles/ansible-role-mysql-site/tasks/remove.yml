@@ -1,0 +1,13 @@
+---
+- name: Ensure MySQL databases are present.
+  mysql_db:
+    name: "{{ item }}"
+    state: absent
+  with_items: "{{ mysql_db }}"
+
+- name: Ensure MySQL users are present.
+  mysql_user:
+    name: "{{ item }}"
+    state: absent
+  with_items: "{{ mysql_user }}"
+

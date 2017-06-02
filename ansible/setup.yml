@@ -1,0 +1,37 @@
+# Ansible managed
+
+- hosts: localhost
+  user: root
+  become: no
+  vars_files:
+# Setup variables
+    - vars/php.yml
+    - vars/php-fpm.yml
+    - vars/exim.yml
+    - vars/drush.yml
+    - vars/security.yml
+    - vars/nginx.yml
+    - vars/core.yml
+    - vars/mysql.yml
+# Setup roles
+  roles:
+    - pbuyle.exim4
+    - geerlingguy.git
+    - jdauphant.nginx
+#    - kamaln7.swapfile
+    - geerlingguy.mysql
+    - f500.repo_dotdeb
+    - geerlingguy.php
+    - ansible-role-php-fpm-pools
+    - ansible-role-hostname
+    - geerlingguy.composer
+    - pbuyle.drush
+    - ANXS.fail2ban
+    - debops.core
+    - debops.ferm
+  tasks:
+    - name: Create variable file drupal-hosts.yml
+      template:
+        src: /etc/ansible/templates/drupal-hosts.yml.j2
+        dest: /etc/ansible/vars/drupal-hosts.yml
+        force: "true"

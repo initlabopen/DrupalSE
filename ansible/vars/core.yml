@@ -1,0 +1,5 @@
+core_fact_ansible_controller: '127.0.0.1'
+
+#install packages
+install_list_packages: unzip,sudo,rsync,tmux,atop,iftop,iotop,curl,apt-transport-https,lynx
+

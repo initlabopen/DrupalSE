@@ -1,0 +1,6 @@
+composer_user: webmaster
+composer_user_home: /home/webmaster
+
+# Setup drush
+drush_install_mode: git
+drush_git_version: 8.x

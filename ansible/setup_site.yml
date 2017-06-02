@@ -1,0 +1,32 @@
+- hosts: localhost
+  user: root
+  become: no
+# Setup roles
+  vars: 
+    - charset_nginx: "{% if charset=='utf8' %}'utf-8'{% else %}'windows-1251'{% endif %}"
+  roles:
+    - ANXS.generic-directories
+    - ansible-role-php-fpm-pools-site
+    - ansible-role-nginx-site
+    - ansible-role-mysql-site
+
+
+  pre_tasks:
+   - name: Include vars file create
+     include_vars:
+       file: directories_create.yml
+     when: site_status  == 'present'
+   - name: Include vars file remove
+     include_vars:
+       file: directories_remove.yml
+     when: site_status == 'absent'
+
+  tasks:
+    - name: Create symlimk access log
+      file: src=/var/log/nginx/{{ site_name }}-access.log dest={{ site_path }}/logs/{{ site_name }}-nginx-access.log owner=webmaster group=webmaster state=link force=yes
+      when: site_status == 'present'
+    - name: Create symlink error log
+      file: src=/var/log/nginx/{{ site_name }}-error.log dest={{ site_path }}/logs/{{ site_name }}-nginx-error.log owner=webmaster group=webmaster state=link force=yes
+      when: site_status  == 'present'
+    - cron: minute=0 user="webmaster" name="cron {{ site_name }}" job="cd {{ site_path }}/html && /usr/local/bin/drush cron" state="{{ site_status }}"
+

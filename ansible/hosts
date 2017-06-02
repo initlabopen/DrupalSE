@@ -1,0 +1,2 @@
+[drupal-hosts]
+vs01.test.ru ansible_ssh_host=127.0.0.1

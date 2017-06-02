@@ -1,0 +1,34 @@
+# Setup firewall
+ferm_enabled: true
+ferm_root_flags.cap_net_admin: []
+ferm_input_list:
+  - type: dport_accept
+    protocol: tcp
+    dport: ["http", "https", "ssh"]
+    accept_any: true
+
+# SYN flood mitigation
+ferm_filter_syn_limit: '400/second'
+ferm_filter_syn_burst: '200'
+ferm_filter_syn_limit: '400/second'
+ferm_filter_syn_burst: '200'
+ferm_filter_icmp_limit: '400/second'
+ferm_filter_icmp_burst: '200'
+
+
+
+#Setup fail2ban
+fail2ban_services:
+  - name: "ssh"
+    enabled: "true"
+    port: "22"
+    filter: "sshd"
+    logpath: "/var/log/auth.log"
+    maxretry: 6
+  - name: "ssh-ddos"
+    enabled: "true"
+    port: "22"
+    filter: "sshd-ddos"
+    logpath: "/var/log/auth.log"
+    maxretry: 3
+

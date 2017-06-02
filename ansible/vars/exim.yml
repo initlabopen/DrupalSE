@@ -1,0 +1,3 @@
+exim4_dc_eximconfig_configtype: internet
+exim4_dc_other_hostnames: "{{ _hostname }}"
+exim4_dc_localdelivery: 'mail_spool'

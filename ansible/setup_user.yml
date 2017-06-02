@@ -1,0 +1,13 @@
+# Ansible managed
+
+- hosts: localhost
+  user: root
+  become: no
+  vars_files:
+# Setup variables
+    - vars/users.yml
+    - vars/directories.yml
+# Setup roles
+  roles:
+    - franklinkim.users
+    - ANXS.generic-directories

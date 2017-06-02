@@ -1,0 +1,2 @@
+genericdirectories_directories_removed:
+  - path: "{{ site_path }}"

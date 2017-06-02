@@ -1,0 +1,20 @@
+{
+"flags": [],
+"uuid": "4a1bd9b3-9998-5820-b587-584c6f25a893",
+"facts": "/etc/ansible/facts.d",
+"bin": "/usr/local/bin",
+"etc": "/usr/local/etc",
+"lib": "/usr/local/lib",
+"sbin": "/usr/local/sbin",
+"share": "/usr/local/share",
+"src": "/usr/local/src",
+"data": "/srv",
+"srv": "/srv",
+"backup": "/var/backups",
+"home": "/var/local",
+"app": "/var/local",
+"var": "/var/local",
+"cache": "/var/cache",
+"log": "/var/log",
+"spool": "/var/spool"
+}

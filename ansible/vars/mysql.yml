@@ -1,0 +1,57 @@
+
+# # my.cnf
+mysql_max_allowed_packet: '128M'
+mysql_character_set_server: 'utf8'
+mysql_collation_server: 'utf8_general_ci'
+mysql_key_buffer: '1348M'
+mysql_query_cache_limit: '32M'
+mysql_query_cache_size: '128M'
+
+mysql_table_open_cache: "4096"
+mysql_innodb_file_per_table: "1"
+mysql_innodb_buffer_pool_size: "1G"
+mysql_innodb_additional_mem_pool_size: "100M"
+mysql_innodb_log_file_size: "64M"
+mysql_innodb_log_buffer_size: "5M"
+mysql_innodb_flush_log_at_trx_commit: "2"
+mysql_innodb_lock_wait_timeout: 50
+mysql_thread_concurrency: 20
+
+
+mysql_max_connections: '200'
+mysql_join_buffer_size: '4M'
+mysql_table_definition_cache: '1000'
+mysql_tmp_table_size: '770M'
+mysql_max_heap_table_size: '770M'
+mysql_open_files_limit: '256'
+mysql_thread_cache_size: 8
+
+mysql_log_error: /var/log/mysql/mysql-error.log
+
+
+mysql_slow_query_log_enabled: true
+mysql_slow_query_log_file: /var/log/mysql/mysql-slow.log
+mysql_slow_query_time: 2
+
+# Setup mysql
+mysql_packages:
+  - mysql-client
+  - mysql-server
+  - python-mysqldb
+
+mysql_root_password: "YM7GIH3J"
+mysql_socket: /var/run/mysqld/mysqld.sock
+mysql_datadir: /var/lib/mysql
+
+
+mysql_users:
+  - name: "userdefault"
+    host: "localhost"
+    password: "GQhCNtBU"
+    priv: "dbdefault.*:ALL"
+
+mysql_databases:
+  - name: "dbdefault"
+    encoding: utf8
+    collation: utf8_general_ci
+

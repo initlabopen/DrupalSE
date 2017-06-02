@@ -1,0 +1,66 @@
+#!/usr/bin/env python
+
+# Ansible managed
+
+from __future__ import print_function
+from json import loads, dumps
+from sys import exit
+from grp import getgrall
+
+output = loads('''{
+    "admin_groups": [
+        "admins"
+    ], 
+    "admin_private_email": [], 
+    "admin_public_email": [
+        "root@17ca229616e9"
+    ], 
+    "admin_users": "root", 
+    "cache_valid_time": "86400", 
+    "distribution": "Debian", 
+    "distribution_release": "jessie", 
+    "domain": "17ca229616e9", 
+    "fqdn": "17ca229616e9", 
+    "homedir_umask": "0027", 
+    "keyserver": "hkp://pool.sks-keyservers.net", 
+    "unsafe_writes": false
+}''')
+
+admin_blacklist_users = loads('''[
+    "admin", 
+    "ansible", 
+    "debian", 
+    "root", 
+    "ubuntu", 
+    "user"
+]''')
+
+groups = getgrall()
+admin_users = set()
+
+if output['admin_users']:
+    if isinstance(output['admin_users'], basestring):
+        admin_users.add(output['admin_users'])
+    elif isinstance(output['admin_users'], list):
+        admin_users.update(set(output['admin_users']))
+    else:
+        raise RuntimeError("Expected basestring or list, but got %r" % (
+            output['admin_users']))
+
+if output['admin_groups']:
+    for group in groups:
+        if group.gr_name in output['admin_groups']:
+            for name in group.gr_mem:
+                if name not in admin_blacklist_users:
+                    admin_users.add(name)
+
+if admin_users:
+    output.update({ "admin_users": sorted(list(admin_users)) })
+
+if not output['admin_private_email']:
+    if output['admin_users']:
+        output.update({ "admin_private_email": sorted(list(admin_users)) })
+    else:
+        output.update({ "admin_private_email": [ "root" ] })
+
+print(dumps(output, sort_keys=True, indent=2))

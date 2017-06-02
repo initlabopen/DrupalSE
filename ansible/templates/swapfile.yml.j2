@@ -1,0 +1,6 @@
+# Setup swap file
+swapfile_swappiness: 10
+swapfile_size: {% if ansible_memtotal_mb/2 < 512 %}1GB{% elif ansible_memtotal_mb/2 > 80192 %}8GB{% else %}"{{ ansible_memtotal_mb % 2 }}GB"{% endif %}
+
+
+

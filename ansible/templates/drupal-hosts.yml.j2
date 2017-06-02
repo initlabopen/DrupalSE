@@ -1,0 +1,21 @@
+#  The interface where the all servers listen: nrpe, mysql and other
+iface: '{{ ansible_default_ipv4.interface }}'
+ifaddr: '{{ ansible_default_ipv4.address }}'
+
+# monitoring disable|enable
+monitoring_status: disable
+# monitoring server address
+# monitoring_server: alpha.infodaymedia.com
+monitoring_server_netaddr: 213.239.195.198
+monitoring_server: alpha.infodaymedia.com
+
+# cluster configuration for sites
+cluster_web_configure: disable
+cluster_web_server: "{{ ansible_fqdn }}"
+cluster_web_netaddr: "{{ ansible_default_ipv4.address }}"
+
+# configure iptables in common role: disable|enable
+iptables_configure: enable
+
+# amazon cloud or generic installation: generic|amazon
+pool_installation: generic

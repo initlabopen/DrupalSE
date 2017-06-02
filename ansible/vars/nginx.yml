@@ -1,0 +1,195 @@
+
+# Setup nginx
+nginx_official_repo: True
+nginx_worker_processes: "{{ ansible_processor_vcpus }}"
+nginx_max_clients: 1024
+nginx_worker_rlimit_nofile: 1024
+nginx_http_params:
+  - open_file_cache max=20000 inactive=20s
+  - open_file_cache_valid 30s
+  - open_file_cache_min_uses 2
+  - open_file_cache_errors on
+  - log_format main '$remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent" "$http_x_forwarded_for" $request_time'
+  - sendfile on
+  - access_log /var/log/nginx/access.log
+  - error_log /var/log/nginx/error.log
+  - client_max_body_size 256M
+  - keepalive_timeout 65
+  - gzip on
+  - gzip_min_length 1100
+  - gzip_buffers 64 8k
+  - gzip_comp_level 5
+  - gzip_http_version 1.1
+  - gzip_proxied any
+  - gzip_types text/plain text/xml application/xml application/x-javascript application/javascript text/javascript text/css text/json
+  - gzip_disable "msie6"
+nginx_sites:
+  000-default:
+    - listen 80 default_server
+    - server_name _
+    - access_log /var/log/nginx/default-access.log main
+    - error_log /var/log/nginx/default-error.log
+    - root /home/webmaster/domains/www/html
+    - if ($bad_bot) {return 444;}
+    - if ($bad_referer) { return 444;  }
+    - if ($not_allowed_method) {return 405;}
+    - fastcgi_keep_conn on
+    - location ~* /sites/default/files/styles/ {
+      access_log off;
+      expires max;
+      error_page 404 = @rewrite;}
+    - location ~* ^.+\.(css|ico|cur|js|jpe?g|gif|htc|ico|png|html|xml|otf|ttf|eot|woff2?|svg|mp3|ogg|mpe?g|avi|zip|gz|bz2?|rar|swf|woff|ogg|mp4|wav|aac|skin)$ {
+      expires max;}
+    - location = /robots.txt {
+      allow all;}
+    - location ~* ^(?:.+\.(?:htaccess|make|txt|engine|inc|info|install|module|profile|po|pot|sh|.*sql|test|theme|tpl(?:\.php)?|xtmpl)|code-style\.pl|/Entries.*|/Repository|/Root|/Tag|/Template)$ {
+      deny all;
+      access_log off;}
+    - location ~ /\. {
+      deny all;
+      access_log off;
+      log_not_found off;}
+    - location ~ ^/sites/default/files/(.+)\.php$ {
+      return 403;}
+    - location ^~ /sites/default/files/private/ {
+      internal;}
+    - location ~* ^/.well-known/ {allow all;}
+    - location ~ ^/tmp/(.+)\.php$ {
+      return 403;}
+    - location / {
+      try_files $uri @rewrite;}
+    - location ~ '\.php$|^/update.php|/cron.php' {
+      fastcgi_pass default;}
+    - location @rewrite {rewrite ^/(.*)$ /index.php?q=$1;}
+    - location /nginx_status {
+      if ($dont_show_status) {return 403;}
+      stub_status on;
+      access_log off;}
+    - location  /status {
+      if ($dont_show_status) {return 403;}
+      fastcgi_pass default;
+      access_log off;}
+    - location  /ping {
+      if ($dont_show_status) {return 403;}
+      fastcgi_pass default;
+      access_log off;}
+
+nginx_configs:
+  upstream:
+    - upstream default {server unix:/var/run/php-fpm-default.sock;}
+  blacklist:
+  ## Add here all user agents that are to be blocked.
+    - map $http_user_agent $bad_bot {
+        default 0;
+        ~*^Lynx 0;
+        libwww-perl 1;
+        ~(?i)(httrack|htmlparser|libwww) 1;}
+## Add here all referrers that are to blocked.
+    - map $http_referer $bad_referer {
+        default 0;
+        ~(?i)(adult|babes|click|diamond|forsale|girl|jewelry|love|nudit|organic|poker|porn|poweroversoftware|sex|teen|webcam|zippo|casino|replica) 1;}
+## Add here all hosts that should be spared any referrer checking.
+    - geo $bad_referer {
+        127.0.0.1 0;
+        192.168.1.0/24 0; }
+  fastcgi_params:
+    - fastcgi_param QUERY_STRING $query_string
+    - fastcgi_param REQUEST_METHOD $request_method
+    - fastcgi_param CONTENT_TYPE $content_type
+    - fastcgi_param CONTENT_LENGTH $content_length
+    - fastcgi_param SCRIPT_NAME $fastcgi_script_name
+    - fastcgi_param REQUEST_URI $request_uri
+    - fastcgi_param DOCUMENT_URI $document_uri
+    - fastcgi_param DOCUMENT_ROOT $document_root
+    - fastcgi_param SERVER_PROTOCOL $server_protocol
+    - fastcgi_param GATEWAY_INTERFACE CGI/1.1
+    - fastcgi_param SERVER_SOFTWARE nginx/$nginx_version
+    - fastcgi_param REMOTE_ADDR $remote_addr
+    - fastcgi_param REMOTE_PORT $remote_port
+    - fastcgi_param SERVER_ADDR $server_addr
+    - fastcgi_param SERVER_PORT $server_port
+    - fastcgi_param SERVER_NAME $server_name
+    - fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name
+## PHP only, required if PHP was built with --enable-force-cgi-redirect
+    - fastcgi_param REDIRECT_STATUS 200
+## HTTPS 'on' parameter.  This requires Nginx version 1.1.11 or
+## later. The if_not_empty flag was introduced in 1.1.11.  See:
+## http://nginx.org/en/CHANGES. If using a version that doesn't
+## support this comment out the line below.
+    - fastcgi_param HTTPS $fastcgi_https if_not_empty
+## For Nginx versions below 1.1.11 uncomment the line below after commenting out the above.
+#    - fastcgi_param HTTPS $fastcgi_https;
+## Fix HTTPoxy vulnerability https://httpoxy.org/#mitigate-nginx.
+    - fastcgi_param HTTP_PROXY ''
+  fastcgi:
+### Generic fastcgi configuration.
+    - include fastcgi_params
+    - fastcgi_buffers 256 4k
+    - fastcgi_intercept_errors on
+## allow 4 hrs - pass timeout responsibility to upstream.
+    - fastcgi_read_timeout 14400
+    - fastcgi_index index.php
+## Hide the X-Drupal-Cache header provided by Pressflow.
+    - fastcgi_hide_header 'X-Drupal-Cache'
+## Hide the Drupal 7 header X-Generator.
+    - fastcgi_hide_header 'X-Generator'
+
+  ## Include the map to block HTTP methods.
+  map_block_http_method:
+    - map $request_method $not_allowed_method {
+        default 1;
+        GET 0;
+        HEAD 0;
+        POST 0;}
+
+  ## Support the X-Forwarded-Proto header for fastcgi.
+  map_xforwader_fastcgi:
+    - map $http_x_forwarded_proto $fastcgi_https {
+        default '';
+        https on;  }
+
+  map_cache:
+    - map $uri $no_cache_ajax {
+        default 0;
+        /system/ajax 1; }
+    - map $http_cookie $no_cache_cookie {
+        default 0;
+        ~SESS 1; }
+    - map $no_cache_ajax$no_cache_cookie $no_cache {
+        default 1;
+        00 0; }
+## If you're using stock Drupal 6 without no_anon, i.e., there's a
+## session cookie being served even to anonymous users, then uncomment
+## the three lines below and comment the above map directive
+    # - map $http_cookie $no_cache {
+    #      default 0;
+    #      ~DRUPAL_UID 1;}
+    - map $http_cookie $cache_uid {
+        default nil;
+        ~SESS[[:alnum:]]+=(?<session_id>[[:graph:]]+) $session_id;}
+
+
+  status_allowed_hosts:
+    - geo $dont_show_status {
+      default 1;
+      127.0.0.1 0;
+      192.168.1.0/24 0;}
+
+  ## Microcache zone definition for FastCGI.
+  fastcgi_microcache_zone:
+  ## If youre using a Nginx version greater than 1.1.1 then you can
+  ## tweak the Tweaking of the cache loader parameters.
+  ## Cf. http://forum.nginx.org/read.php?21,213197,213209#msg-213209 for
+  ## rationale. If you're using a Nginx version lower than 1.1.1 then
+  ## comment the line below and use the cache zone configuration below this one.
+    - fastcgi_cache_path /var/cache/nginx/microcache_fastcgi levels=1:2 keys_zone=microcache_fastcgi:10M max_size=1G inactive=30m loader_threshold=2592000000 loader_sleep=1 loader_files=100000
+
+  ## If you're not using a Nginx version greater or equal to 1.1.1 then
+  ## comment the above configuration and use this one. No cache loader
+  ## tweaking.
+      #fastcgi_cache_path /var/cache/nginx/microcache_fastcgi levels=1:2 keys_zone=microcache_fastcgi:5M max_size=1G inactive=2h;
+
+nginx_auth_basic_files:
+  dev:
+    - webmaster:$apr1$dIgI/qH5$jmjkqnfx11w0if/GCtlTG/
+
