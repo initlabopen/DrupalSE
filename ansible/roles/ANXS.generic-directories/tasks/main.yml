@@ -1,0 +1,19 @@
+# file: generic-directories/tasks/main.yml
+
+- name: generic-directories | Make sure all directories are present
+  file:
+    path: "{{ item.path }}"
+    owner: "{{ item.owner | default(omit) }}"
+    group: "{{ item.group | default(omit) }}"
+    mode: "{{ item.mode | default(omit) }}"
+    recurse: "{{ item.recurse | default(omit) }}"
+    state: "directory"
+  with_items: genericdirectories_directories
+  when: genericdirectories_directories is defined
+
+- name: generic-directories | Make sure all removed directories are not present
+  file:
+    path: "{{ item.path }}"
+    state: "absent"
+  with_items: genericdirectories_directories_removed
+  when: genericdirectories_directories_removed is defined

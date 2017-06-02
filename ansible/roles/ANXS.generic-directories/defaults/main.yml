@@ -1,0 +1,4 @@
+# file: generic-directories/defaults/main.yml
+
+genericdirectories_directories: []
+genericdirectories_directories_removed: []
