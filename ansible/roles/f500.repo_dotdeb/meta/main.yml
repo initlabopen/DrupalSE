@@ -1,0 +1,16 @@
+---
+galaxy_info:
+  author: Jasper N. Brouwer, Ramon de la Fuente
+  description: Add DotDeb repository
+  company: Future500
+  license: LGPL
+  min_ansible_version: 1.4
+  platforms:
+  - name: Debian
+    versions:
+      - wheezy
+      - jessie
+  categories:
+    - system
+    - packaging
+dependencies: []
