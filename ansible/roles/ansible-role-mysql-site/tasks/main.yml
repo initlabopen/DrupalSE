@@ -1,6 +1,0 @@
----
-- include: configure.yml
-  when: site_status == "present"
-
-- include: remove.yml
-  when: site_status == "absent"

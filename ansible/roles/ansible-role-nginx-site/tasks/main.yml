@@ -1,9 +1,0 @@
----
-- include: configuration.yml
-  when: site_status == "present"
-  tags: [configuration,nginx]
-
-- include: remove-unwanted.yml
-  when: site_status == "absent"
-  tags: [configuration,nginx]
-
