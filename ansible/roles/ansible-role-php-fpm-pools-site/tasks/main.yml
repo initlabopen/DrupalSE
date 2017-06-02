@@ -1,0 +1,6 @@
+---
+- include: create_pool.yml
+  when: site_status == "present"
+
+- include: remove_pool.yml
+  when: site_status == "absent"

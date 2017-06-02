@@ -1,0 +1,21 @@
+- name: Delete the default POOL configuration file
+  file: >
+    path={{ __php_fpm_default_pool_conf_path }}
+    state=absent
+  when: php_fpm_default_pool.delete
+  tags: [configuration,php,fpm]
+
+- name: Copy the POOL configurations
+  file: >
+    path={{ php_fpm_pools_directory }}/{{ item }}.conf
+    state=absent
+  with_items: "{{ site_name }}"
+  notify:
+   - restart php-fpm
+  tags: [configuration,php,fpm]
+
+- name: Check php-fpm syntax of configuration files
+  shell: "{{ php_fpm_pools_daemon }} -t"
+  register: result
+  changed_when: "result.rc != 0"
+  tags: [configuration,php,fpm]

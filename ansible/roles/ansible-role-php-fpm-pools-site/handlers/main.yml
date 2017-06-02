@@ -1,0 +1,9 @@
+---
+# handlers file for initlabopen.ansible-role-php-fpm-pools
+
+- name: restart php-fpm
+  service:
+    name: "{{ php_fpm_daemon }}"
+    state: restarted
+#  when: php_enable_php_fpm
+

@@ -1,0 +1,29 @@
+---
+# tasks file for initlabopen.ansible-role-php-fpm-pools
+- name: Include vars file
+  include_vars:
+    file: pool_create.yml
+
+- name: Delete the default POOL configuration file
+  file: >
+    path={{ __php_fpm_default_pool_conf_path }}
+    state=absent
+  when: php_fpm_default_pool.delete
+  tags: [configuration,php,fpm]
+
+- name: Copy the POOL configurations
+  template: >
+    src=pool.conf.j2
+    dest={{ php_fpm_pools_directory }}/{{ item['name'] }}.conf
+    backup=yes
+  with_items: "{{ php_fpm_pools }}"
+  when: php_fpm_pools|lower != 'none'
+  notify:
+   - restart php-fpm
+  tags: [configuration,php,fpm]
+
+- name: Check php-fpm syntax of configuration files
+  shell: "{{ php_fpm_pools_daemon }} -t"
+  register: result
+  changed_when: "result.rc != 0"
+  tags: [configuration,php,fpm]
