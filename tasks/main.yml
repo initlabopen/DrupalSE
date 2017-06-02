@@ -1,0 +1,13 @@
+---
+
+- name: add dotdeb key
+  apt_key: id=89DF5277 url=http://www.dotdeb.org/dotdeb.gpg state=present
+  when: ansible_distribution in ['Debian'] and ansible_distribution_release in [ "wheezy", "jessie" ]
+
+- name: add dotdeb repository
+  apt_repository: repo='deb http://mirror.nl.leaseweb.net/dotdeb/ {{ ansible_distribution_release }} all' state=present update_cache=no
+  when: ansible_distribution in ['Debian'] and ansible_distribution_release in [ "wheezy", "jessie" ]
+
+- name: add dotdeb source repository
+  apt_repository: repo='deb-src http://mirror.nl.leaseweb.net/dotdeb/ {{ ansible_distribution_release }} all' state=present update_cache=yes
+  when: ansible_distribution in ['Debian'] and ansible_distribution_release in [ "wheezy", "jessie" ]
