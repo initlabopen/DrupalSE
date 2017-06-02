@@ -1,0 +1,18 @@
+---
+galaxy_info:
+  author: Pierre Buyle & Pierre Paul Lefebvre
+  description: Manage a simple exim4 configuration
+  company: Floe design + technologies
+  license: BDS
+  min_ansible_version: 1.2
+  platforms:
+  - name: Ubuntu
+    versions:
+    - all
+  - name: Debian
+    versions:
+    - all
+  galaxy_tags:
+  - networking
+  - packaging
+dependencies: []

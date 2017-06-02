@@ -1,0 +1,9 @@
+command_acl:
+{% if (exim4_outgoing_headers is defined) and exim4_outgoing_headers %}
+  warn
+{% for header in exim4_outgoing_headers %}
+    add_header = {{ header }}
+{% endfor %}
+{% endif %}
+  # Accept command line sent emails
+  accept
