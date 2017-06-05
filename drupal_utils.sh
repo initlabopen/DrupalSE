@@ -50,7 +50,7 @@ print_log() {
 
 # set logo
 get_logo(){
-  logo="Drupal virtual appliance"
+  logo="Drupal Server Environment"
   echo -e "\t\t" $logo
 }
 
