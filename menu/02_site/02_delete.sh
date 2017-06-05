@@ -40,6 +40,7 @@ delete_site() {
          site_mysql_user="user$site_short"
 	 delete_site_exe="ansible-playbook /etc/ansible/setup_site.yml -e site_status=absent -e site_name=$site_name -e site_path=$site_dir -e mysql_db=$site_mysql_database -e mysql_user=$site_mysql_user"
     fi
+    echo "Please wait..."
     output_exe=$(eval $delete_site_exe 2>&1)
     # test on error message
     error=$(  echo "$output_exe" | grep 'FIALED')

@@ -52,14 +52,14 @@ apt_update(){
 }
 utilit_install(){
 	print "Installation utils. Please wait." 1
-	apt-get -y install aptitude >> $LOG
-	aptitude -y install wget  python python-dev libssl-dev build-essential libffi-dev >> $LOG
+	apt-get -y install aptitude >> $LOG 2>&1
+	aptitude -y install wget  python python-dev libssl-dev build-essential libffi-dev >> $LOG 2>&1
 }
 ansible_install(){
         print "Installation ansible. Please wait." 1
-	wget -O /tmp/get-pip.py https://bootstrap.pypa.io/get-pip.py >> $LOG
-	python /tmp/get-pip.py >> $LOG
-	pip install ansible >> $LOG
+	wget -O /tmp/get-pip.py https://bootstrap.pypa.io/get-pip.py >> $LOG 2>&1
+	python /tmp/get-pip.py >> $LOG 2>&1
+	pip install ansible >> $LOG 2>&1
 }
 
 # generate random password

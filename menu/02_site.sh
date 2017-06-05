@@ -30,7 +30,7 @@ _menu_sites() {
   _menu_sites_01="1. Create site"
   _menu_sites_02="2. Delete site"
 
-  _sites_logo="Manage sites in the pool"
+  _sites_logo="Manage sites on the server"
 
   SITE_MENU_SELECT=
   until [[ -n "$SITE_MENU_SELECT" ]]; do

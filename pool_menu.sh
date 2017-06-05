@@ -12,12 +12,12 @@ logo=$(get_logo)
 
 
 # empty pool menu
-menu_create_pool_1="1. Create Management pool of server";  # create_pool_1
+menu_create_pool_1="1. Configure new server";  # create_pool_1
 
 # manage localhost settings
 menu_local_1="1. Manage localhost"
 
-menu_sites_2="2. Manage sites in the server"                 # manage sites on the server
+menu_sites_2="2. Manage sites on the server"                 # manage sites on the server
 
 # default exit menu for all screens
 menu_default_exit="0. Exit"
@@ -38,7 +38,7 @@ create_pool_1() {
         # POOL_CREATE_OPTION_HOST
         # hostname, may be user want to change it
         _hostname=$(hostname)
-        print_message "Enter new name for master (default=$_hostname): " "" \
+        print_message "Enter new name for server (default=$_hostname): " "" \
             "" _hostname $_hostname
         # test hostname
         if [[ -n "$_hostname" ]]; then
@@ -58,6 +58,7 @@ create_pool_1() {
     prepare_pool_exe="ansible-playbook /etc/ansible/prepare.yml -e _hostname=$POOL_CREATE_OPTION_HOST -e mysql_passwd_root=$PASSWD_MYSQL_ROOT -e mysql_passwd_default=$PASSWD_MYSQL_DEFAULT"
     create_pool_exe="ansible-playbook /etc/ansible/setup.yml -e _hostname=$POOL_CREATE_OPTION_HOST"
     # test on error message
+    echo "Please wait..."
     output_exe=$(eval $prepare_pool_exe 2>&1)
     output_exe1=$(eval $create_pool_exe 2>&1)
     # test on error message
@@ -98,9 +99,7 @@ menu_server_list(){
     echo
     # not found pool configuation
     if [[ ! -f $POOL_MAIN_CONFIG ]]; then
-      print_header "Not found configured server's! May be You want to add new."
-#      print_color_text "If you want to add the server to an existing cluster" red
-#      print_color_text "Use one of the addresses listed above on master server" red
+      print_header "Not found server configuration!"
       echo Available actions:
       echo -e "\t\t " $menu_create_pool_1
       echo -e "\t\t " $menu_default_exit

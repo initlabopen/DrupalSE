@@ -1,7 +1,7 @@
 export LANG=en_US.UTF-8
 export TERM=linux
 
-BASE_DIR=/root/bin
+BASE_DIR=/opt/drupalserver/bin
 LOGS_DIR=$BASE_DIR/logs
 TEMP_DIR=$BASE_DIR/temp
 CACHE_DIR=$BASE_DIR/tmp
@@ -180,10 +180,17 @@ test_passwd_localhost() {
     exit
   fi
     HASH_PASSWD_WEBMASTER=`mkpasswd --method=SHA-512 "$PASSWD_WEBMASTER"`
-    ansible-playbook /etc/ansible/setup_user.yml -e password_user_webmaster=HASH_PASSWD_WEBMASTER
-    if [[ $? -gt 0 ]]; then
-      print_message "Press ENTER for exit" "create user webmaster" "" any_key
-      exit 1
+    echo "Please wait..."
+#    ansible-playbook /etc/ansible/setup_user.yml -e password_user_webmaster=HASH_PASSWD_WEBMASTER
+    output_exe=$(ansible-playbook /etc/ansible/setup_user.yml -e password_user_webmaster=HASH_PASSWD_WEBMASTER)
+    # test on error message
+    error=$(  echo "$output_exe" | grep 'FIALED')
+    any_key=
+    if [[ -n "$error" ]]; then
+        print_message "CREATE_USER error: Press ENTER for exit: " "$error" '' 'any_key'
+	exit 1
+    else
+        print_message "CREATE_USER complete: Press ENTER for exit: " '' '' 'any_key'
     fi
   fi
 

@@ -38,26 +38,6 @@ get_options() {
         SITE_DB="db$site_short"
         SITE_USER="user$site_short"
 
-    print_message "Do you want to specify them? (N|y)" \
-        "Option will generated automatically:\n1. database name, database login and password\n2. document root for site\n" \
-        "" manual_input "$manual_input"
-
-    if [[ $(echo "$manual_input" | grep -wci "y") -gt 0 ]]; then
-        # we dont't test empty string, because there is deafult value for this options
-        print_message "Enter document root path($SITE_ROOT): " "" "" SITE_ROOT "$SITE_ROOT"
-        print_message "Enter database name($SITE_DB): " "" "" SITE_DB "$SITE_DB"
-        print_message "Enter username: ($SITE_USER): " "" "" SITE_USER "$SITE_USER"
-        # test user name
-        if [[ $(echo "$SITE_USER" | grep -wci "root") -gt 0 ]]; then
-            print_message "Press ENTER and try again" \
-                "Not allowed to use root for database login" \
-                "" any_key
-            return 1
-        fi
-        # password info
-        ask_password_info "$SITE_USER" SITE_PASSWORD
-        [[ $? -gt 0 ]] && return 1
-    fi
     if [[ -n "$SITE_PASSWORD" ]]; then
         SITE_PASSWORD_FILE=$(mktemp $CACHE_DIR/.siteXXXXXXXX)
         echo "$SITE_PASSWORD" > $SITE_PASSWORD_FILE
@@ -98,8 +78,7 @@ create_site_process() {
         fi
         create_site_mark=Y
     done
-#    print_message "Please wait" "The site with name $site_name exist will be create" "" any_key
-
+    echo "Please wait..."
     output_exe=$(eval $create_site_exe 2>&1)
     # test on error message
     error=$(  echo "$output_exe" | grep 'FIALED')

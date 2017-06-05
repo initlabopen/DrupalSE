@@ -30,6 +30,7 @@ nginx_sites:
     - access_log /var/log/nginx/default-access.log main
     - error_log /var/log/nginx/default-error.log
     - root /home/webmaster/domains/www/html
+    - charset utf
     - if ($bad_bot) {return 444;}
     - if ($bad_referer) { return 444;  }
     - if ($not_allowed_method) {return 405;}

@@ -66,10 +66,10 @@ _halt_server(){
 }
 
 _update_server(){
-  print_message "Please confirm update of the server (N|y): " \
+  print_message "Please confirm security update of the server (N|y): " \
    "" "" _update_ans n
   if [[ $(echo "$_update_ans" | grep -iwc 'y') -gt 0 ]]; then
-    yum update --merge-conf ;
+	aptitude update 2> /dev/null | apt-get upgrade -s | grep Security | grep Inst| awk -F " " {'print $2'} |xargs aptitude upgrade -y
   fi
 }
 
@@ -78,7 +78,7 @@ _menu_local() {
   _menu_local_01="1. Configure hostname"
   _menu_local_02="2. Reboot server"
   _menu_local_03="3. Shutdown server"
-  _menu_local_04="4. Update server"
+  _menu_local_04="4. Update security server"
 
   _menu_local_00="0. Previous screen or exit"
   _menu_list="
