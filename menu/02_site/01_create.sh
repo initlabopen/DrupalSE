@@ -81,7 +81,7 @@ create_site_process() {
     echo "Please wait..."
     output_exe=$(eval $create_site_exe 2>&1)
     # test on error message
-    error=$(  echo "$output_exe" | grep 'FIALED')
+    error=$(echo "$output_exe" | grep "FIALED")
     any_key=
     if [[ -n "$error" ]]; then
         print_message "CREATE_SITE error: Press ENTER for exit: " "$error" '' 'any_key'

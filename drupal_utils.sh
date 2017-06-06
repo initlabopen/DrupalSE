@@ -184,7 +184,7 @@ test_passwd_localhost() {
 #    ansible-playbook /etc/ansible/setup_user.yml -e password_user_webmaster=HASH_PASSWD_WEBMASTER
     output_exe=$(ansible-playbook /etc/ansible/setup_user.yml -e password_user_webmaster="$HASH_PASSWD_WEBMASTER")
     # test on error message
-    error=$(  echo "$output_exe" | grep 'FIALED')
+    error=$(echo "$output_exe" | grep "FIALED")
     any_key=
     if [[ -n "$error" ]]; then
         print_message "CREATE_USER error: Press ENTER for exit: " "$error" '' 'any_key'

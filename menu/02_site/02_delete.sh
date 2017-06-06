@@ -43,7 +43,7 @@ delete_site() {
     echo "Please wait..."
     output_exe=$(eval $delete_site_exe 2>&1)
     # test on error message
-    error=$(  echo "$output_exe" | grep 'FIALED')
+    error=$(echo "$output_exe" | grep "FIALED")
     any_key=
     if [[ -n "$error" ]]; then
         print_message "DELETE_SITE error: Press ENTER for exit: " "$error" '' 'any_key'
