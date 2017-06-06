@@ -182,7 +182,7 @@ test_passwd_localhost() {
     HASH_PASSWD_WEBMASTER=`mkpasswd --method=SHA-512 "$PASSWD_WEBMASTER"`
     echo "Please wait..."
 #    ansible-playbook /etc/ansible/setup_user.yml -e password_user_webmaster=HASH_PASSWD_WEBMASTER
-    output_exe=$(ansible-playbook /etc/ansible/setup_user.yml -e password_user_webmaster=HASH_PASSWD_WEBMASTER)
+    output_exe=$(ansible-playbook /etc/ansible/setup_user.yml -e password_user_webmaster="$HASH_PASSWD_WEBMASTER")
     # test on error message
     error=$(  echo "$output_exe" | grep 'FIALED')
     any_key=

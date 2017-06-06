@@ -35,7 +35,7 @@ _configure_hostname(){
   if [[ $(echo "$_user_answer" | grep -wci 'y') -gt 0  ]]; then
      print_message "Input hostname (ex. server1) and press ENTER: " "" "" _hostname
      if [[ -n "$_hostname" ]]; then
-	sed -e "s/$_current_hostname/$_hostname/g" "$config_network"
+	sed -i "s/$_current_hostname/$_hostname/g" "$config_network"
         echo "Config file $config_network is updated"
 
         echo $_hostname > $etc_hostname
