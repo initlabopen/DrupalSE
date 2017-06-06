@@ -101,10 +101,12 @@ utilit_install
 ansible_install
 
 print "Configure drupal-env.Please wait." 1
+wget --no-check-certificate https://github.com/initlabopen/DrupalSE/archive/master.tar.gz /tmp/master.tar.gz >> $LOG 2>&1
+cd /tmp/
+tar xvf master.tar.gz >> $LOG 2>&1
 mkdir -p /opt/drupalserver/bin
-cd /opt/drupalserver/bin
-git clone https://github.com/kochetovd/Drupal-Server-Environment.git /opt/drupalserver/bin >> $LOG 2>&1
-mv ansible /etc/
+mv /tmp/DrupalSE-master/ansible /etc/
+mv /tmp/DrupalSE-master/* /opt/drupalserver/bin/
 
 print "Drupal Environment installation is completed." 1
 rm -f $LOG
