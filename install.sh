@@ -53,7 +53,7 @@ apt_update(){
 utilit_install(){
 	print "Installation utils. Please wait." 1
 	apt-get -y install aptitude >> $LOG 2>&1
-	aptitude -y install wget  python python-dev libssl-dev build-essential libffi-dev >> $LOG 2>&1
+	aptitude -y install wget  python python-dev libssl-dev build-essential libffi-dev git >> $LOG 2>&1
 }
 ansible_install(){
         print "Installation ansible. Please wait." 1
@@ -103,7 +103,7 @@ ansible_install
 print "Configure drupal-env.Please wait." 1
 mkdir -p /opt/drupalserver/bin
 cd /opt/drupalserver/bin
-git clone https://github.com/kochetovd/Drupal-Server-Environment.git
+git clone https://github.com/kochetovd/Drupal-Server-Environment.git /opt/drupalserver/bin
 mv ansible /etc/
 
 print "Drupal Environment installation is completed." 1
