@@ -103,7 +103,7 @@ ansible_install
 print "Configure drupal-env.Please wait." 1
 mkdir -p /opt/drupalserver/bin
 cd /opt/drupalserver/bin
-git clone https://github.com/kochetovd/Drupal-Server-Environment.git /opt/drupalserver/bin
+git clone https://github.com/kochetovd/Drupal-Server-Environment.git /opt/drupalserver/bin >> $LOG 2>&1
 mv ansible /etc/
 
 print "Drupal Environment installation is completed." 1
