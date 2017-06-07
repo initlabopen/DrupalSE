@@ -109,7 +109,7 @@ rsync -av /tmp/DrupalSE-master/ansible /etc/ >> $LOG 2>&1
 rm -rf /tmp/DrupalSE-master/ansible
 rsync -av /tmp/DrupalSE-master/ /opt/drupalserver/bin/ >> $LOG 2>&1
 mv /opt/drupalserver/bin/drupalSE_menu.sh /root/
-echo -e "#menu\n~/menu.sh" >> /root/.bash_profile
+echo -e "#menu\n~/drupalSE_menu.sh" >> /root/.bash_profile
 
 print "Drupal Environment installation is completed." 1
 rm -f $LOG
