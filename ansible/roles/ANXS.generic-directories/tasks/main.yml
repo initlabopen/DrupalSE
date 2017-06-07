@@ -8,12 +8,12 @@
     mode: "{{ item.mode | default(omit) }}"
     recurse: "{{ item.recurse | default(omit) }}"
     state: "directory"
-  with_items: genericdirectories_directories
+  with_items: "{{ genericdirectories_directories }}"
   when: genericdirectories_directories is defined
 
 - name: generic-directories | Make sure all removed directories are not present
   file:
     path: "{{ item.path }}"
     state: "absent"
-  with_items: genericdirectories_directories_removed
+  with_items: "{{ genericdirectories_directories_removed }}"
   when: genericdirectories_directories_removed is defined
