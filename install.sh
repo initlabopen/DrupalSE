@@ -101,12 +101,15 @@ utilit_install
 ansible_install
 
 print "Configure drupal-env.Please wait." 1
-wget --no-check-certificate https://github.com/initlabopen/DrupalSE/archive/master.tar.gz /tmp/master.tar.gz >> $LOG 2>&1
+wget --no-check-certificate https://github.com/initlabopen/DrupalSE/archive/master.tar.gz -O /tmp/master.tar.gz >> $LOG 2>&1
 cd /tmp/
 tar xvf master.tar.gz >> $LOG 2>&1
 mkdir -p /opt/drupalserver/bin
-mv /tmp/DrupalSE-master/ansible /etc/
-mv /tmp/DrupalSE-master/* /opt/drupalserver/bin/
+rsync -av /tmp/DrupalSE-master/ansible /etc/ >> $LOG 2>&1
+rm -rf /tmp/DrupalSE-master/ansible
+rsync -av /tmp/DrupalSE-master/ /opt/drupalserver/bin/ >> $LOG 2>&1
+mv /opt/drupalserver/bin/drupalSE_menu.sh /root/
+echo -e "#menu\n~/menu.sh" >> /root/.bash_profile
 
 print "Drupal Environment installation is completed." 1
 rm -f $LOG
