@@ -4,9 +4,9 @@
 export LANG=en_US.UTF-8
 export TERM=linux
 PROGNAME=$(basename $0)
-PROGPATH=$PWD
+PROGPATH=/opt/drupalserver/bin
 VERBOSE=1
-BASE_DIR=$PWD
+BASE_DIR=/opt/drupalserver/bin
 LOGS_DIR=$BASE_DIR/logs
 TEMP_DIR=$BASE_DIR/temp
 LOGS_FILE=$LOGS_DIR/local_menu.log
