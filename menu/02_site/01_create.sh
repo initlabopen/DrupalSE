@@ -131,7 +131,7 @@ _menu_create() {
 
 
     # menu
-  SITES_LIST_WITH_NUMBER=$(python list_sites.py)
+  SITES_LIST_WITH_NUMBER=$(python $BASE_DIR/list_sites.py)
   echo "$SITES_LIST_WITH_NUMBER"
       _menu_list="
 $_menu_create_01

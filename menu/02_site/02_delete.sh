@@ -71,7 +71,7 @@ _menu_delete() {
     echo
 
     # menu
-     POOL_SITES_LIST=$(python list_sites.py)
+     POOL_SITES_LIST=$(python $BASE_DIR/list_sites.py)
      echo "$POOL_SITES_LIST"
 
       _menu_list="

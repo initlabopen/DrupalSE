@@ -40,8 +40,8 @@ _menu_sites() {
     echo
 
     # menu
-    python list_sites.py
-    POOL_SITES_KERNEL_COUNT=$(python list_sites_count.py)
+    python $BASE_DIR/list_sites.py
+    POOL_SITES_KERNEL_COUNT=$(python $BASE_DIR/list_sites_count.py)
 
       # define menu points
       if [[ $POOL_SITES_KERNEL_COUNT -eq 1 ]]; then
