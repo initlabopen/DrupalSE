@@ -69,7 +69,9 @@ _update_server(){
   print_message "Please confirm security update of the server (N|y): " \
    "" "" _update_ans n
   if [[ $(echo "$_update_ans" | grep -iwc 'y') -gt 0 ]]; then
-	aptitude update 2> /dev/null | apt-get upgrade -s | grep Security | grep Inst| awk -F " " {'print $2'} |xargs aptitude upgrade -y
+	if [[ -n $(aptitude update 2> /dev/null | apt-get upgrade -s | grep Security | grep Inst| awk -F " " '{print $2;}') ]]; then
+		aptitude update 2> /dev/null | apt-get upgrade -s | grep Security | grep Inst| awk -F " " '{print $2;}' |xargs aptitude upgrade -y
+	fi
   fi
 }
 
