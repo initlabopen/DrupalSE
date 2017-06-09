@@ -45,17 +45,13 @@ get_options() {
     fi
 
 
-#    if [[ $DEBUG -gt 0 ]]; then
         if [[ -n $SITE_ROOT ]]; then
-            echo "SITE_ROOT:            $SITE_ROOT"
-            echo "SITE_DB:              $SITE_DB"
-            echo "SITE_USER:            $SITE_USER"
-            [[ -f $SITE_PASSWORD_FILE ]] && \
-                echo "SITE_PASSWORD_FILE:   $SITE_PASSWORD_FILE"
-            echo "SITE_PASSWORD:        $SITE_PASSWORD"
+            echo "Site directory:            $SITE_ROOT"
+            echo "Site database:             $SITE_DB"
+            echo "Site database user:        $SITE_USER"
+            echo "Site database passwd:      $SITE_PASSWORD"
         fi
-        echo "SITE_CHARSET:  $site_charset"
-#    fi
+            echo "Site charset:              $site_charset"
     return 0
 }
 
