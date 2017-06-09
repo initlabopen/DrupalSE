@@ -114,3 +114,5 @@ echo -e "#menu\n~/drupalSE_menu.sh" >> /root/.bash_profile
 
 print "Drupal Environment installation is completed." 1
 rm -f $LOG
+sleep 5
+/root/drupalSE_menu.sh
