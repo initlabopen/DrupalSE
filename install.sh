@@ -110,7 +110,7 @@ rm -rf /tmp/DrupalSE-master/ansible
 rsync -av /tmp/DrupalSE-master/ /opt/drupalserver/bin/ >> $LOG 2>&1
 mv /opt/drupalserver/bin/drupalSE_menu.sh /root/
 chmod +x /root/drupalSE_menu.sh
-if [[ $(cat /root/.bash_profile |grep -wci 'drupalSE_menu.sh') -eq 1 ]]; then
+if [[ $(cat /root/.bash_profile |grep -wci 'drupalSE_menu.sh') -eq "0" ]]; then
 	echo -e "#menu\n~/drupalSE_menu.sh" >> /root/.bash_profile
 fi
 print "Drupal Environment installation is completed." 1
