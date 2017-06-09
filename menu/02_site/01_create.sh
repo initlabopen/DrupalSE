@@ -37,6 +37,7 @@ get_options() {
         SITE_ROOT="/home/webmaster/domains/$site_name"
         SITE_DB="db$site_short"
         SITE_USER="user$site_short"
+	SITE_PASSWORD=$(create_random_string)
 
     if [[ -n "$SITE_PASSWORD" ]]; then
         SITE_PASSWORD_FILE=$(mktemp $CACHE_DIR/.siteXXXXXXXX)
@@ -44,7 +45,7 @@ get_options() {
     fi
 
 
-    if [[ $DEBUG -gt 0 ]]; then
+#    if [[ $DEBUG -gt 0 ]]; then
         if [[ -n $SITE_ROOT ]]; then
             echo "SITE_ROOT:            $SITE_ROOT"
             echo "SITE_DB:              $SITE_DB"
@@ -54,7 +55,7 @@ get_options() {
             echo "SITE_PASSWORD:        $SITE_PASSWORD"
         fi
         echo "SITE_CHARSET:  $site_charset"
-    fi
+#    fi
     return 0
 }
 
