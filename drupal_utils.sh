@@ -200,8 +200,8 @@ test_passwd_localhost() {
 
   if [[ $(echo "$_test_Last_password_change" | grep -ic 'password must be changed') -gt 0 ]]; then
     clear
-    print_color_text "You must change password for bitrix user" red
-    passwd bitrix
+    print_color_text "You must change password for webmaster user" red
+    passwd webmaster
     if [[ $? -gt 0 ]]; then
       print_message "Press ENTER for exit" "You must changed password for user" \
        "" any_key

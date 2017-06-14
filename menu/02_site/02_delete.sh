@@ -28,7 +28,7 @@ delete_site() {
     # site not found, try test option site with directory
     if [[ ( $is_site -eq 0 ) ]]; then
         print_message "Press ENTER and exit" \
-               "Not found bitrix installation in $site_dir" \
+               "Not found site directory $site_dir" \
                "" any_key
         exit
 

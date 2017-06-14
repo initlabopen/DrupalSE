@@ -3,7 +3,7 @@
 # variables
 LOG=$(mktemp /tmp/drupal-XXXXX.log)
 RELEASE_FILE=/etc/debian_version
-DEFAULT_SITE=/home/bitrix/www
+DEFAULT_SITE=/home/webmaster/domains/www/html
 [[ -z $SILENT ]] && SILENT=0
 [[ -z $TEST_REPOSITORY ]] && TEST_REPOSITORY=0
 
