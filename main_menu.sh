@@ -73,7 +73,7 @@ main_menu_server(){
   MENU_SELECTION=
   MAIN_CONFIG=/etc/ansible/vars/drupal-hosts.yml
   until [[ "$MENU_SELECTION" == "0" ]]; do
-#    clear;
+    clear;
     echo -e "\t\t\t\t\t Drupal Server Environment"
     echo -e "\t\t\t\t\t Configuration manager on this server"
     echo

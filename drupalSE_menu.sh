@@ -1,2 +1,2 @@
 #!/bin/bash 
-/opt/drupalserver/bin/pool_menu.sh
+/opt/drupalserver/bin/main_menu.sh

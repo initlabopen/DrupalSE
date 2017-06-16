@@ -4,8 +4,6 @@
 LOG=$(mktemp /tmp/drupal-XXXXX.log)
 RELEASE_FILE=/etc/debian_version
 DEFAULT_SITE=/home/webmaster/domains/www/html
-[[ -z $SILENT ]] && SILENT=0
-[[ -z $TEST_REPOSITORY ]] && TEST_REPOSITORY=0
 
 # common subs
 print(){
@@ -21,28 +19,6 @@ print_e(){
     print "$msg_e" 2
     print "Installation logfile - $LOG" 1
     exit 1
-}
-
-disable_selinux(){
-    sestatus_cmd=$(which sestatus 2>/dev/null)
-    [[ -z $sestatus_cmd ]] && return 0
-
-    sestatus=$($sestatus_cmd | awk -F':' '/SELinux status:/{print $2}' | sed -e "s/\s\+//g")
-    seconfigs="/etc/selinux/config /etc/sysconfig/selinux"
-    if [[ $sestatus != "disabled" ]]; then
-        print "You must disable SElinux before installing the Drupal Server Environment." 1
-        print "You need to reboot the server to disable SELinux"
-        read -r -p "Do you want disable SELinux?(Y|n)" DISABLE
-        [[ -z $DISABLE ]] && DISABLE=y
-        [[ $(echo $DISABLE | grep -wci "y") -eq 0 ]] && print_e "Exit."
-        for seconfig in $seconfigs; do
-            [[ -f $seconfig ]] && \
-                sed -i "s/SELINUX=\(enforcing\|permissive\)/SELINUX=disabled/" $seconfig && \
-                print "Change SELinux state to disabled in $seconfig" 1
-        done
-        print "Please reboot the system! (cmd: reboot)" 1
-        exit
-    fi
 }
 
 
@@ -62,26 +38,13 @@ ansible_install(){
 	pip install ansible >> $LOG 2>&1
 }
 
-# generate random password
-randpw(){
-    local len="${1:-20}"
-    if [[ $DEBUG -eq 0 ]]; then
-        </dev/urandom tr -dc '?!@&\-_+@%\(\)\{\}\[\]=0-9a-zA-Z' | head -c20; echo ""
-    else
-        </dev/urandom tr -dc '?!@&\-_+@%\(\)\{\}\[\]=' | head -c20; echo ""
-    fi
-
-}
-
-
-
 # testing effective UID
 [[ $EUID -ne 0 ]] && \
     print_e "This script must be run as root or it will fail" 
 
 # testing OS name
 [[ ! -f $RELEASE_FILE ]] && \
-    print_e "This script is designed for use in OS DebianOS Linux"
+    print_e "This script is designed for use in OS Debian Linux"
 
 # Notification
 if [[ $SILENT -eq 0 ]]; then
@@ -93,7 +56,6 @@ if [[ $SILENT -eq 0 ]]; then
     print "====================================================================" 2
 fi
 
-disable_selinux
 
 # update all packages
 apt_update
