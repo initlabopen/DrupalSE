@@ -78,7 +78,7 @@ main_menu_server(){
     echo -e "\t\t\t\t\t Configuration manager on this server"
     echo
     # not found pool configuation
-    if [[ ! -f $POOL_MAIN_CONFIG ]]; then
+    if [[ ! -f $MAIN_CONFIG ]]; then
       echo -e "\t\t\t This server not configure!"
       echo
       echo "Available actions:"
