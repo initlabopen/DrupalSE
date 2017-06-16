@@ -30,7 +30,7 @@ disable_selinux(){
     sestatus=$($sestatus_cmd | awk -F':' '/SELinux status:/{print $2}' | sed -e "s/\s\+//g")
     seconfigs="/etc/selinux/config /etc/sysconfig/selinux"
     if [[ $sestatus != "disabled" ]]; then
-        print "You must disable SElinux before installing the Bitrix Environment." 1
+        print "You must disable SElinux before installing the Drupal Server Environment." 1
         print "You need to reboot the server to disable SELinux"
         read -r -p "Do you want disable SELinux?(Y|n)" DISABLE
         [[ -z $DISABLE ]] && DISABLE=y
