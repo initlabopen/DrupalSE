@@ -1,18 +1,11 @@
 #!/bin/bash
 # manage localhost - network settings, reboot
 #set -x
-export LANG=en_US.UTF-8
-export TERM=linux
 PROGNAME=$(basename $0)
 PROGPATH=/opt/drupalserver/bin
-VERBOSE=1
 BASE_DIR=/opt/drupalserver/bin
-LOGS_DIR=$BASE_DIR/logs
-TEMP_DIR=$BASE_DIR/temp
-LOGS_FILE=$LOGS_DIR/local_menu.log
 
 . $PROGPATH/drupal_utils.sh || exit 1
-logo=$(get_logo)
 
 
 # change current hostname for host
@@ -77,33 +70,18 @@ _update_server(){
 
 # print local menu
 _menu_local() {
-  _menu_local_01="1. Configure hostname"
-  _menu_local_02="2. Reboot server"
-  _menu_local_03="3. Shutdown server"
-  _menu_local_04="4. Update security server"
-
-  _menu_local_00="0. Previous screen or exit"
-  _menu_list="
-$_menu_local_01
-$_menu_local_02
-$_menu_local_03
-$_menu_local_04
-$_menu_local_00
-"
-  _local_logo="Configure local server"
-
   MENU_LOCAL_SELECT=
   until [[ -n "$MENU_LOCAL_SELECT" ]]; do
     clear;
-    echo -e "\t\t\t" $logo
-    echo -e "\t\t\t" $_local_logo
+    echo -e "\t\t\t\t\t Drupal Server Environment"
+    echo -e "\t\t\t\t\t Configure local server"
     echo
-
     echo Available actions:
-    while IFS= read -r _menu_name
-    do
-      echo -e "\t\t" $_menu_name
-    done <<< "$_menu_list"
+    echo -e "\t\t 1. Configure hostname"
+    echo -e "\t\t 2. Reboot server"
+    echo -e "\t\t 3. Shutdown server"
+    echo -e "\t\t 4. Update security server"
+    echo -e "\t\t 0. Previous screen or exit"
 
     print_message 'Enter selection: ' '' '' MENU_LOCAL_SELECT
     case "$MENU_LOCAL_SELECT" in

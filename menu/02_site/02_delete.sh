@@ -5,8 +5,10 @@ PROGNAME=$(basename $0)
 PROGPATH=$(dirname $0)
 [[ -z $DEBUG ]] && DEBUG=0
 
-. $PROGPATH/functions.sh || exit 1
-logo=$(get_logo)
+BASE_DIR=/opt/drupalserver/bin
+[[ -z $DEBUG ]] && DEBUG=0
+
+. $BASE_DIR/drupal_utils.sh || exit 1
 
 delete_site() {
     site_dir=$1
@@ -57,34 +59,22 @@ delete_site() {
 
 # print host menu
 _menu_delete() {
-  _menu_delete_00="0. Previous screen or exit"
-  _menu_delete_01="   Delete site"
-
-
-  _sites_logo="Delete site"
 
   SITE_MENU_SELECT=
   until [[ -n "$SITE_MENU_SELECT" ]]; do
     clear
-    echo -e "\t\t\t" $logo
-    echo -e "\t\t\t" $_sites_logo
+    echo -e "\t\t\t\t\t Drupal Server Environment"
+    echo -e "\t\t\t\t\t Delete site"
     echo
 
     # menu
-     POOL_SITES_LIST=$(python $BASE_DIR/list_sites.py)
-     echo "$POOL_SITES_LIST"
-
-      _menu_list="
-$_menu_delete_01
-$_menu_delete_00"
-
+    POOL_SITES_LIST=$(python $BASE_DIR/list_sites.py)
+    echo "$POOL_SITES_LIST"
     echo Available actions:
-    while IFS= read -r _menu_name
-    do
-      echo -e "\t\t" $_menu_name
-    done <<< "$_menu_list"
+    echo -e "\t\t Delete site"
+    echo -e "\t\t 0. Previous screen or exit"
 
-     print_message 'Enter site directory (ex. /home/webmaster/domains/example.com) or 0 for exit: ' '' '' SITE_MENU_SELECT
+    print_message 'Enter site directory (ex. /home/webmaster/domains/example.com) or 0 for exit: ' '' '' SITE_MENU_SELECT
 
     # process selection
     case "$SITE_MENU_SELECT" in

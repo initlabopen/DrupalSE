@@ -3,14 +3,11 @@
 #set -x
 PROGNAME=$(basename $0)
 PROGPATH=$(dirname $0)
+BASE_DIR=/opt/drupalserver/bin
 [[ -z $DEBUG ]] && DEBUG=0
 
-. $PROGPATH/functions.sh || exit 1
-logo=$(get_logo)
-# SITE_DB
-# SITE_ROOT
-# SITE_CHARSET
-# SITE_PASSWORD
+. $BASE_DIR/drupal_utils.sh || exit 1
+
 get_options() {
     local site_name=${1}
 
@@ -114,32 +111,20 @@ create_site() {
 
 # print host menu
 _menu_create() {
-  _menu_create_00="0. Previous screen or exit"
-  _menu_create_01="   Create new site "
-
-  _sites_logo="Create new site"
-
   SITE_MENU_SELECT=
   until [[ -n "$SITE_MENU_SELECT" ]]; do
     clear
-    echo -e "\t\t\t" $logo
-    echo -e "\t\t\t" $_sites_logo
+    echo -e "\t\t\t\t\t Drupal Server Environment"
+    echo -e "\t\t\t\t\t Create new site"
     echo
 
-
     # menu
-  SITES_LIST_WITH_NUMBER=$(python $BASE_DIR/list_sites.py)
-  echo "$SITES_LIST_WITH_NUMBER"
-      _menu_list="
-$_menu_create_01
-$_menu_create_00"
+    SITES_LIST_WITH_NUMBER=$(python $BASE_DIR/list_sites.py)
+    echo "$SITES_LIST_WITH_NUMBER"
 
     echo Available actions:
-    while IFS= read -r _menu_name
-    do
-      echo -e "\t\t" $_menu_name
-    done <<< "$_menu_list"
-
+    echo -e "\t\t Create new site"
+    echo -e "\t\t 0. Previous screen or exit"
      print_message 'Enter site name (ex. example.org) or 0 for exit: ' '' '' SITE_MENU_SELECT
 
     # process selection
