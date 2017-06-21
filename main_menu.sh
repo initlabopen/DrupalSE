@@ -22,12 +22,12 @@ configure_server_1() {
         # SERVER_HOSTNAME
         # hostname, may be user want to change it
         _hostname=$(hostname)
-        print_message "Enter new name for server (default=$_hostname): " "" "" _hostname $_hostname
+        output_text "Enter new name for server (default=$_hostname): "  _hostname $_hostname
         # test hostname
         if [[ -n "$_hostname" ]]; then
             SERVER_HOSTNAME=$_hostname
         else
-            print_message "Want to try again(Y|n) " "Cannot use empty hostname" "" _host_user
+            output_text "Want to try again(Y|n) " "Cannot use empty hostname" _host_user
             [[ $(echo "$_user" | grep -wci 'y') -eq 0 ]] && exit 1
         fi
     done
@@ -46,9 +46,9 @@ configure_server_1() {
     error=$(echo "$output_exe $output_exe1" | grep "FAILED")
     any_key=
     if [[ -n "$error" ]]; then
-        print_message "SERVER_CONFIGURE error: Press ENTER for exit: " "$error" '' 'any_key'
+        output_text "SERVER_CONFIGURE error: Press ENTER for exit: " "$error" any_key
     else
-        print_message "SERVER_CONFIGURE complete: Press ENTER for exit: " '' '' 'any_key'
+        output_text "SERVER_CONFIGURE complete: Press ENTER for exit: " "" any_key
     fi
 
 }
@@ -84,7 +84,7 @@ main_menu_server(){
       echo "Available actions:"
       echo -e "\t\t 1. Configure new server"
       echo -e "\t\t 0. Exit"
-      read -p 'Enter choice: ' MENU_SELECTION
+      output_text "Enter choice: " "" MENU_SELECTION
 
       case "$MENU_SELECTION" in
         1|a) configure_server_1;;
@@ -97,7 +97,7 @@ main_menu_server(){
       echo -e "\t\t 1. Manage localhost"
       echo -e "\t\t 2. Manage sites on the server"
       echo -e "\t\t 0. Exit"
-      read -p 'Enter choice: '  MENU_SELECTION
+      output_text "Enter choice: " ""  MENU_SELECTION
       case "$MENU_SELECTION" in
         1|a)  localhost_manage;;
         2|b)  sites_manage;;
@@ -105,7 +105,7 @@ main_menu_server(){
           *)  echo -e "${RED}Error...${STD}" && sleep 2;;
       esac
       MENU_SELECTION=
- 
+
     fi
  done
 }
