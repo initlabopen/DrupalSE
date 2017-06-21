@@ -1,0 +1,45 @@
+---
+# configure hostname on localhost
+- name: set hostname 
+  shell: hostname {{ _hostname }}; echo {{ _hostname }} > /etc/hostname
+  tags: hostname
+
+# configure hosts file
+#- name: remove temporary directory
+#  file: path=/tmp/hosts state=absent
+#  tags: hosts
+
+#- name: create temporary directory
+#  file: path=/tmp/hosts state=directory
+#  tags: hosts
+
+#- name: create a file which will holds current hosts records
+#  shell: mktemp /tmp/hosts/01_XXXXXX_hosts_current
+#  register: hosts_current_file
+#  tags: hosts
+
+#- name: create a file which will holds pool hosts records
+#  shell: mktemp /tmp/hosts/02_XXXXXX_hosts_pool
+#  register: hosts_pool_file
+#  tags: hosts
+
+#- name: get existen records from hosts file
+#  shell: sed -n '/ANSIBLE MANAGED BLOCK/,+1!p' /etc/hosts | grep -v '^#' > {{ hosts_current_file.stdout }}
+#  tags: hosts
+
+#- name: create records for pool hosts
+#  template: src=hosts.j2 dest={{ hosts_pool_file.stdout }}
+#  tags: hosts
+
+- name: Ensure hostname is in /etc/hosts
+  lineinfile:
+    dest=/etc/hosts
+    regexp="^{{ ansible_default_ipv4.address }}.+$"
+    line="{{ ansible_default_ipv4.address }} {{ _hostname }}"
+
+#- name: assemble records for hosts file
+#  assemble: src=/tmp/hosts/ dest=/etc/hosts
+#    mode=0644 owner=root group=root
+#  tags: hosts
+
+
