@@ -22,7 +22,7 @@ configure_server_1() {
         # SERVER_HOSTNAME
         # hostname, may be user want to change it
         _hostname=$(hostname)
-        output_text "Enter new name for server (default=$_hostname): "  _hostname $_hostname
+        output_text "Enter new name for server (default=$_hostname): "  "" _hostname $_hostname
         # test hostname
         if [[ -n "$_hostname" ]]; then
             SERVER_HOSTNAME=$_hostname
