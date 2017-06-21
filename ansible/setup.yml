@@ -13,6 +13,7 @@
     - vars/nginx.yml
     - vars/core.yml
     - vars/mysql.yml
+    - vars/memcached.yml
 # Setup roles
   roles:
     - pbuyle.exim4
