@@ -1,0 +1,11 @@
+# Setup memcached
+memcached_user: www-data
+memcached_memory_limit: 128M
+memcached_socket_path: /tmp/memcached.sock
+memcached_socket_permissions: "0755"
+memcached_port: 11211
+memcached_connections: 1024
+memcached_listen_ip: 127.0.0.1
+memcached_log_file: /var/log/memcached.log
+memcached_use_socket: true
+

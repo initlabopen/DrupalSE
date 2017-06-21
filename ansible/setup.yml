@@ -22,8 +22,9 @@
     - geerlingguy.mysql
     - f500.repo_dotdeb
     - geerlingguy.php
-    - ansible-role-php-fpm-pools
-    - ansible-role-hostname
+    - initlabopen.ansible-role-php-fpm-pools
+    - initlabopen.ansible-role-hostname
+    - initlabopen.ansible-role-memcached
     - geerlingguy.composer
     - pbuyle.drush
     - ANXS.fail2ban
