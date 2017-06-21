@@ -1,0 +1,14 @@
+php_fpm_pools:
+ - name: testsite
+   user: www-data
+   group: www-data
+   listen: 8000
+   chdir: /
+
+php_fpm_pool_defaults:
+  pm: dynamic
+  pm.max_children: 150
+  pm.start_servers: 20
+  pm.min_spare_servers: 1
+  pm.max_spare_servers: 30
+  pm.status_path: /status
