@@ -5,6 +5,8 @@ PROGNAME=$(basename $0)
 PROGPATH=/opt/drupalserver/bin
 BASE_DIR=/opt/drupalserver/bin
 
+[[ -z $DEBUG ]] && DEBUG=0
+
 . $PROGPATH/drupal_utils.sh || exit 1
 
 
