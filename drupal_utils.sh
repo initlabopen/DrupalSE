@@ -1,65 +1,37 @@
 
-print_color_text(){
-  _color_text="$1"
-  _color_name="$2"
-  _echo_opt="$3"
-  [[ -z "$_color_name" ]] && _color_name='green'
-  _color_number=38
 
-  case "$_color_name" in 
-    green)    _color_number=32 ;;
-    blue)     _color_number=34 ;;
-    red)      _color_number=31 ;;
-    cyan)     _color_number=36 ;;
-    magenta)  _color_number=35 ;;
-    *)        _color_number=39 ;;
-  esac
+output_text(){
+  DEBUG=1
+    input_text=${1}
+    input_color_text=${2}
+    variable_name=${3}
+    variable_name_default=${4}
+    read_text=
+    set_variable_default=0
 
-  echo -en "\\033[1;${_color_number}m"
-  echo $_echo_opt "$_color_text"
-  echo -en "\\033[0;39m"
-}
+    [[ -z "$input_text" ]] && input_text="Press ENTER for exit: "
 
-# print error message
-# as we use cycles, must make sure that the user sees an error
-print_message(){
-    _input_message=${1}       # prompt in read output
-    _print_message=${2}       # colored text like a notice
-    _input_format=${3}        # can add option to read 
-    _input_key=${4}           # saved variable name
-    _input_default=${5}       # default value for variable
-    _read_input_key=
-    _notset_input_key=0       # printf change empty string
-
-    [[ -z "$_input_message" ]] && _input_message="Press ENTER for exit: "
-
-    # print notice message
-    [[ -n "$_print_message" ]] && print_color_text "$_print_message" blue -e
+    [[ -n "$input_color_text" ]] && echo -e "\033[0;34m$input_color_text\033[0m"
     echo
 
-    # get variable value from user
-    # -r If this option is given, backslash does not act as an escape character
-    read $_input_format -r -p "$_input_message" _read_input_key
-    if [[ -z "$_read_input_key" ]]; then
-        _notset_input_key=1
-        [[ -n "$_input_default" ]] && _notset_input_key=2
-        [[ $DEBUG -gt 0 ]] && echo "Found empty input; _notset_input_key=$_notset_input_key"
+    read -r -p "$input_text" read_text
+    if [[ -z "$read_text" ]]; then
+        set_variable_default=1
+        [[ -n "$variable_name_default" ]] && set_variable_default=2
+        [[ $DEBUG -gt 0 ]] && echo "Empty input; set_variable_default=$set_variable_default"
     else
-        # %q - print the associated argument shell-quoted, reusable as input
-        _read_input_key=$(printf "%q" "$_read_input_key")
+        read_text=$(printf "%q" "$read_text")
     fi
 
-    # if empty set variable to default value
-    if [[ $_notset_input_key -eq 2 ]]; then
-        [[ $DEBUG -gt 0 ]] && echo "_input_key="$_input_default
-        eval "$_input_key="$_input_default
+    if [[ $set_variable_default -eq 2 ]]; then
+        [[ $DEBUG -gt 0 ]] && echo "variable_name="$variable_name_default
+        eval "$variable_name="$variable_name_default
     else
-        eval "$_input_key="$_read_input_key
-        [[ $DEBUG -gt 0 ]] && echo "_input_key="$_read_input_key
+        eval "$variable_name="$read_text
+        [[ $DEBUG -gt 0 ]] && echo "variable_name="$read_text
     fi
     echo
 }
-
 
 # create random string
 create_random_string() {
@@ -75,99 +47,64 @@ test_user_localhost() {
   if [[ -n "$_test_exist_user_webmaster" ]]; then
     clear
     print_color_text "You create user webmaster" red
-    print_message 'Enter password for user webmaster: ' '' '' PASSWD_WEBMASTER
+    output_text 'Enter password for user webmaster: ' ""  PASSWD_WEBMASTER
   if [[ -z "$PASSWD_WEBMASTER" ]]; then
-    print_message "Press ENTER for exit" "Password user webmaster can not be empty" \
-     "" any_key
+    output_text "Press ENTER for exit" \
+    "Password user webmaster can not be empty" any_key
     exit
   fi
     HASH_PASSWD_WEBMASTER=`mkpasswd --method=SHA-512 "$PASSWD_WEBMASTER"`
     echo "Please wait..."
     output_exe=$(ansible-playbook /etc/ansible/setup_user.yml -e password_user_webmaster="$HASH_PASSWD_WEBMASTER")
     # test on error message
-    error=$(echo "$output_exe" | grep "FIALED")
+    error=$(echo "$output_exe" | grep "FAILED")
     any_key=
     if [[ -n "$error" ]]; then
-        print_message "CREATE_USER error: Press ENTER for exit: " "$error" '' 'any_key'
+        output_text "CREATE_USER error: Press ENTER for exit: " "$error" any_key
 	exit 1
     else
-        print_message "CREATE_USER complete: Press ENTER for exit: " '' '' 'any_key'
+        output_text "CREATE_USER complete: Press ENTER for exit: " "" any_key
     fi
   fi
 
 }
 
-# https://tools.ietf.org/html/rfc1034
-# http://tools.ietf.org/html/rfc1123
-# http://en.wikipedia.org/wiki/Hostname
-# The standard characters are: 
-#   the numbers from 0 through 9, 
-#   uppercase and lowercase letters from A through Z, 
-#   and the hyphen (-) character. 
-# Computer names cannot consist entirely of numbers.
-# Preferred name syntax
-# 1. test for accepted chars
-# 2. test string length (for netbios name)
-# IP: egrep '([[:digit:]]{1,3}\.){3}[[:digit:]]{1,3}'
+
 test_hostname() {
     q_host="${1}"
-    q_size="${2}"
-
     # now we forget about  63 octets long
     hostname_regexp='^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$'
     test_hostname=0
     localhost_names='^(localhost|localhost.localdom|ip6-localhost|ip6-loopback)$'
     number_names='^[0-9]+$'
-
-    # test hostname 
+    # test hostname
     if [[ -z "${q_host}" ]]; then
-        print_message "Please enter any key" \
-            "Hostname cannot be empty" \
-            "" any_key
+        output_text "Please enter any key" "Hostname cannot be empty" any_key
     else
         # test initial host name regexp
         if [[ $(echo "${q_host}" | egrep -c "$hostname_regexp" ) -gt 0 ]]; then
             # test localhost aliases
             if [[ $(echo "${q_host}" | egrep -c "$localhost_names") -gt 0 ]]; then
-                print_message "Please enter any key" \
-                    "Hostname='$q_host' contains alias on localhost" \
-                    "" any_key
-                    
+                output_text "Please enter any key" \
+                    "Hostname='$q_host' contains alias on localhost" any_key
             # test names cannot consist entirely of numbers.
             elif [[ $(echo "${q_host}" | egrep -c "$number_names") -gt 0 ]]; then
-                print_message "Please enter any key" \
-                    "Hostname='$q_host' consist entirely of numbers" \
-                    "" any_key
-
+                output_text "Please enter any key" \
+                    "Hostname='$q_host' consist entirely of numbers" any_key
             # all test passed
             else
-                # if limit size defined, check it
-                if [[ ${q_size} -gt 0 ]] 2>/dev/null; then
-                    len_hostname=$(echo "${q_host}" | wc -c)
-                    # all ok
-                    if [[ ${len_hostname} -le ${q_size} ]]; then
-                        test_hostname=1
-                    else
-                        print_message "Please enter any key" \
-                            "Hostname='$q_host' contains more than $q_size chars" \
-                            "" any_key
-                    fi
                 # all ok
-                else
-                    test_hostname=1
-                fi
+                test_hostname=1
             fi
         else
-            print_color_text "The DNS or hostname characters are: "
+            echo -e  "\033[0;32mThe DNS or hostname characters are: \033[0m"
             echo " -- the numbers from 0 through 9"
             echo " -- letters from a through z"
             echo " -- the hyphen (-) character"
             echo " -- the dot (.) character"
-            echo 
-            print_message "Please enter any key" \
-                "Hostname='$q_host' contains invalid characters" \
-                "" any_key
+            echo
+            output_text "Please enter any key" \
+                "Hostname='$q_host' contains invalid characters" any_key
         fi
     fi
 }
-

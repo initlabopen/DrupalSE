@@ -1,23 +1,23 @@
 #!/bin/bash
-# manage sites and site's options 
+# manage sites and site's options
 #set -x
 PROGNAME=$(basename $0)
 PROGPATH=$(dirname $0)
-[[ -z $DEBUG ]] && DEBUG=0
-
+SITE_MENU=$PROGPATH/02_site
 BASE_DIR=/opt/drupalserver/bin
 BIN_DIR=$BASE_DIR
 
+[[ -z $DEBUG ]] && DEBUG=0
+
 . $BIN_DIR/drupal_utils.sh || exit 1
 
-sites_menu=$PROGPATH/02_site
 
 _create_site() {
-  $sites_menu/01_create.sh
+  $SITE_MENU/01_create.sh
 }
 
 _delete_site() {
-  $sites_menu/02_delete.sh
+  $SITE_MENU/02_delete.sh
 }
 
 
@@ -39,7 +39,7 @@ _menu_sites() {
 	echo "Available actions:"
  	echo -e "\t\t 1. Create site"
 	echo -e "\t\t 0. Previous screen or exit"
-	print_message 'Enter selection: ' '' '' SITE_MENU_SELECT
+	output_text 'Enter selection: ' ''  SITE_MENU_SELECT
 
 	# process selection
 	case "$SITE_MENU_SELECT" in
@@ -54,7 +54,7 @@ _menu_sites() {
         echo -e "\t\t 1. Create site"
         echo -e "\t\t 2. Delete site"
         echo -e "\t\t 0. Previous screen or exit"
-	print_message 'Enter selection: ' '' '' SITE_MENU_SELECT
+	output_text 'Enter selection: ' ''  SITE_MENU_SELECT
 
 	# process selection
 	case "$SITE_MENU_SELECT" in
@@ -69,4 +69,3 @@ _menu_sites() {
 }
 
 _menu_sites
-

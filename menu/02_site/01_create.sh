@@ -1,5 +1,5 @@
 #!/bin/bash
-# manage sites and site's options 
+# manage sites and site's options
 #set -x
 PROGNAME=$(basename $0)
 PROGPATH=$(dirname $0)
@@ -13,13 +13,11 @@ get_options() {
 
     # site charset
     SITE_CHARSET="utf8"
-    print_message "Enter site encoding (UTF8|cp1251): " "" \
-        "" site_charset "$SITE_CHARSET"
+    output_text "Enter site encoding (UTF8|cp1251): " "" site_charset "$SITE_CHARSET"
     SITE_CHARSET=$(echo "$SITE_CHARSET" | awk '{print tolower($0)}')
     if [[ ( "$SITE_CHARSET" != "utf8" ) && ( "$SITE_CHARSET" != "cp1251" ) ]]; then
-        print_message "Press ENTER and try again" \
-            "Charset for site can contain only 'utf8' or 'cp1251'" \
-            "" any_key
+        output_text "Press ENTER and try again" \
+            "Charset for site can contain only 'utf8' or 'cp1251'" any_key
         return 1
     fi
 
@@ -34,7 +32,7 @@ get_options() {
         SITE_ROOT="/home/webmaster/domains/$site_name"
         SITE_DB="db$site_short"
         SITE_USER="user$site_short"
-	SITE_PASSWORD=$(create_random_string)
+	      SITE_PASSWORD=$(create_random_string)
 
     if [[ -n "$SITE_PASSWORD" ]]; then
         SITE_PASSWORD_FILE=$(mktemp $CACHE_DIR/.siteXXXXXXXX)
@@ -75,12 +73,12 @@ create_site_process() {
     echo "Please wait..."
     output_exe=$(eval $create_site_exe 2>&1)
     # test on error message
-    error=$(echo "$output_exe" | grep "FIALED")
+    error=$(echo "$output_exe" | grep "FAILED")
     any_key=
     if [[ -n "$error" ]]; then
-        print_message "CREATE_SITE error: Press ENTER for exit: " "$error" '' 'any_key'
+        output_text "CREATE_SITE error: Press ENTER for exit: " "$error" any_key
     else
-        print_message "CREATE_SITE complete: Press ENTER for exit: " '' '' 'any_key'
+        output_text "CREATE_SITE complete: Press ENTER for exit: " "" any_key
     fi
     [[ $DEBUG -gt 0 ]] && echo "$create_site_exe"
 }
@@ -93,16 +91,14 @@ create_site() {
 
   # test site name
   if [[ -z "$site_name" ]]; then
-    print_message "Press ENTER for exit" "Site name can not be empty" \
-     "" any_key
+    output_text "Press ENTER for exit" "Site name can not be empty" any_key
     exit
   fi
 
   ### 1. test if site with defined name exists in list
   #echo "$SITES_LIST_WITH_NUMBER"
   if [[ $(echo "$SITES_LIST_WITH_NUMBER" | grep -ci "$site_name") -gt 0 ]]; then
-    print_message "Press ENTER for exit" "The site with name $site_name exist in the system" \
-     "" any_key
+    output_text "Press ENTER for exit" "The site with name $site_name exist in the system" any_key
     exit
   fi
 
@@ -125,7 +121,7 @@ _menu_create() {
     echo Available actions:
     echo -e "\t\t Create new site"
     echo -e "\t\t 0. Previous screen or exit"
-     print_message 'Enter site name (ex. example.org) or 0 for exit: ' '' '' SITE_MENU_SELECT
+     output_text 'Enter site name (ex. example.org) or 0 for exit: ' "" SITE_MENU_SELECT
 
     # process selection
     case "$SITE_MENU_SELECT" in
@@ -141,4 +137,3 @@ _menu_create() {
 }
 
 _menu_create
-

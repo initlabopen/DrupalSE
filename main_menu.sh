@@ -43,7 +43,7 @@ configure_server_1() {
     output_exe=$(eval $prepare_pool_exe 2>&1)
     output_exe1=$(eval $create_pool_exe 2>&1)
     # test on error message
-    error=$(echo "$output_exe $output_exe1" | grep "FIALED")
+    error=$(echo "$output_exe $output_exe1" | grep "FAILED")
     any_key=
     if [[ -n "$error" ]]; then
         print_message "SERVER_CONFIGURE error: Press ENTER for exit: " "$error" '' 'any_key'
