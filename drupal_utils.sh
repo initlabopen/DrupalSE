@@ -46,7 +46,7 @@ test_user_localhost() {
   _test_exist_user_webmaster=$(echo "$test_pwd" |grep -e "does not exist in" -e " не существует в")
   if [[ -n "$_test_exist_user_webmaster" ]]; then
     clear
-    print_color_text "You create user webmaster" red
+    echo -e "\033[0;31mYou create user webmaster\033[0m" 
     output_text 'Enter password for user webmaster: ' ""  PASSWD_WEBMASTER
   if [[ -z "$PASSWD_WEBMASTER" ]]; then
     output_text "Press ENTER for exit" \
