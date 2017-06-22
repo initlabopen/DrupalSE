@@ -13,6 +13,7 @@ DrupalSE will install:
 - Mysql
 - Drush
 - Composer
+
 - Ntp
 - Ferm
 - Exim
@@ -29,7 +30,7 @@ sh drupalSE.sh
 
 Input password for user 'webmaster'
 
-Select “1. Configure new server” for configure server
+Press “1. Configure new server” for configure server
 
 ## Manage sites
 
