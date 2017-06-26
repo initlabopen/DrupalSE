@@ -48,6 +48,6 @@ sh drupalSE_menu.sh
   - site root folder;
   - user and password for database;
   - database name.
-- Press “0. Exit” для выхода
+- Press “0. Exit” for exit.
 
 Download drupal in _site root folder_ and install it or load dump to database.
