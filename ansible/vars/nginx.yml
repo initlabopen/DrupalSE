@@ -5,6 +5,8 @@ nginx_worker_processes: "{{ ansible_processor_vcpus }}"
 nginx_max_clients: 1024
 nginx_worker_rlimit_nofile: 1024
 nginx_http_params:
+  - add_header X-XSS-Protection "1; mode=block"
+  - server_tokens off
   - open_file_cache max=20000 inactive=20s
   - open_file_cache_valid 30s
   - open_file_cache_min_uses 2

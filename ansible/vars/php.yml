@@ -48,4 +48,13 @@ php_upload_max_filesize: "128M"
 php_date_timezone: "Europe/Moscow"
 php_sendmail_path: "/usr/sbin/sendmail -t -i"
 php_short_open_tag: false
-
+php_expose_php: "off"
+php_disable_functions:
+  - popen
+  - exec
+  - ftp_exec
+  - system
+  - passthru
+  - proc_open
+  - shell_exec
+  - phpinfo
