@@ -13,6 +13,7 @@ DrupalSE will install:
 - Mysql
 - Drush
 - Composer
+
 - Ntp
 - Ferm
 - Exim
@@ -29,7 +30,7 @@ sh drupalSE.sh
 
 Input password for user 'webmaster'
 
-Select “1. Configure new server” for configure server
+Press “1. Configure new server” for configure server
 
 ## Manage sites
 
@@ -47,6 +48,6 @@ sh drupalSE_menu.sh
   - site root folder;
   - user and password for database;
   - database name.
-- Press “0. Exit” для выхода
+- Press “0. Exit” for exit.
 
 Download drupal in _site root folder_ and install it or load dump to database.
