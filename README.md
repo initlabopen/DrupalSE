@@ -5,7 +5,7 @@ DrupalSE is a script for configuring Server Environment for Drupal using Ansible
 DrupalSE makes configuring server environments for Drupal quick and easy.
 
 Supported operation systems:
-- Debian 8 ( Wheezy )
+- Debian 8 ( Jessie )
 
 DrupalSE will install:
 - Nginx
