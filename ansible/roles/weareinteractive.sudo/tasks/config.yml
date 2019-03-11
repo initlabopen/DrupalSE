@@ -1,0 +1,25 @@
+---
+
+- name: "Creating sudoers configuration in /etc/sudoers.d/{{ sudo_sudoers_file }}"
+  template:
+    src: "etc/sudoers.d/ansible.j2"
+    dest: "/etc/sudoers.d/{{ sudo_sudoers_file }}"
+    validate: "visudo -cf %s"
+    owner: root
+    group: "{{ sudo_sudoers_group }}"
+    mode: "0440"
+
+- name: List files in /etc/sudoers.d
+  shell: ls -1 /etc/sudoers.d
+  register: sudoers_contents
+  changed_when: false
+  when: purge_other_sudoers_files
+
+- name: Remove unmanaged /etc/sudoers.d/ files
+  file:
+    path: "/etc/sudoers.d/{{ item }}"
+    state: absent
+  with_items: "{{ sudoers_contents.stdout_lines }}"
+  when:
+    - purge_other_sudoers_files
+    - item != sudo_sudoers_file

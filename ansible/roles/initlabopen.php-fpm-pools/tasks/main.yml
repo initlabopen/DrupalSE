@@ -1,0 +1,34 @@
+---
+# tasks file for initlabopen.ansible-role-php-fpm-pools
+
+- name: Delete the default POOL configuration file
+  file: >
+    path={{ __php_fpm_default_pool_conf_path }}
+    state=absent
+  when: php_fpm_default_pool.delete
+  tags: [configuration,php,fpm]
+
+- name: Copy the POOL configurations
+  template: >
+    src=pool.conf.j2
+    dest={{ php_fpm_pools_directory }}/{{ item['name'] }}.conf
+    backup=yes
+  with_items: "{{ php_fpm_pools }}"
+  when: php_fpm_pools|lower != 'none'
+  notify:
+   - restart php-fpm
+  tags: [configuration,php,fpm]
+
+- name: Check php-fpm syntax of configuration files
+  shell: "{{ php_fpm_pools_utility }} -t"
+  register: result
+  changed_when: "result.rc != 0"
+  tags: [configuration,php,fpm]
+
+- name: Ensure php-fpm is started and enabled at boot (if configured, Debian).
+  service:
+    name: "{{ php_fpm_pools_daemon }}"
+    state: started
+    enabled: yes
+    use: service
+  when: ansible_distribution == "Debian"

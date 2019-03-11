@@ -9,6 +9,3 @@ users:
       - www-data
     uid: 1001
     password: "{{ password_user_webmaster }}"
-#    authorized_keys:
-#      - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCvjz+FVu8Rcrst/z6TeIv3OvnhHM4gQo/0ohaQjQxb3hjf9JcleApVt/ziTBNNyq48JpB0eIiLFeW7UQxEdRkKKBIxBL2q40hBxbv5tET7N0ArLif4nJ2LkIB3zQae24k5iDqznC20wvBzSUZl7fWw6oVl53qmUWeOFgT/yzksFcCrzs2QDtD8fGjdG8ljX0dsjVlcSum9GK0+o5A/UyQKsolfzFP5Xp+dmTt/2gGgX5sFVKifyhcYOFR8VNpvN7QbfP545BBzr5MqCtGAITpKm1QKGgUwkL4KuOShZ6OxrxaUXWAx4Mq815UcKG7LjkG5FK7+h6YHlC2rXLxBF7Tt roman@HPProBook4320s"
-#      - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDVav5g2o4JAs12JSznS/Nxm0vnx+7dK8R/7x4VopcY0vnxVPLEPjiqx3x9A1xKQm2+l53R/u1McjVXzqhVnP512eo1O7nQJuf+TV6DCVzwrhS0ZuBRP8PjxMDWy4e9FDMFL9cAAJMQQWI2QEYqAql6SOU6XRAVNNjr3SEIfXjsEOgj9SDDqRv7Ar0S1sfMbYETnQhqpqOF+ZcyuOqrD0sbEKFrY6czGJHrXAGYNoi5w3T6xNaB8UF4j1u8Tuk4Ntq9d7Cb6awvsPvFRFgjPrAUMk2qMo0D3FWEDf4QfptwsEFS+YKgzjpAICsKQ25DDiOyWUqLn/1q2GBvxd0FKc55 initlab@initlab-System-Product-Name"

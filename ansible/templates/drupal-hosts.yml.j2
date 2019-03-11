@@ -2,13 +2,6 @@
 iface: '{{ ansible_default_ipv4.interface }}'
 ifaddr: '{{ ansible_default_ipv4.address }}'
 
-# monitoring disable|enable
-monitoring_status: disable
-# monitoring server address
-# monitoring_server: alpha.infodaymedia.com
-monitoring_server_netaddr: 213.239.195.198
-monitoring_server: alpha.infodaymedia.com
-
 # cluster configuration for sites
 cluster_web_configure: disable
 cluster_web_server: "{{ ansible_fqdn }}"

@@ -1,0 +1,11 @@
+backups:
+  - name: "backups_dir_etc"
+    destination_path: /root/backups
+    user: root
+    cron_hour: '01'
+    cron_minut: '00'
+    cron_day: '*'
+    cron_weekday: '*'
+    cron_month: '*'
+    source_path: /etc
+    days: '7'

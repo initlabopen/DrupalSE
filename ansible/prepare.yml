@@ -3,26 +3,17 @@
 - hosts: localhost
   user: root
   become: no
-  vars_files:
-# Setup variables
-    - vars/php.yml
-    - vars/php-fpm.yml
-    - vars/exim.yml
-    - vars/drush.yml
-    - vars/security.yml
-    - vars/nginx.yml
-    - vars/core.yml
-    - vars/mysql.yml
   tasks:
     - name: Create variable file drupal-hosts.yml
       template:
         src: /etc/ansible/templates/hosts.j2
         dest: /etc/ansible/hosts
         force: "true"
+
     - name: Create variable file drupal-hosts.yml
       template:
         src: /etc/ansible/templates/mysql.yml.j2
-        dest: /etc/ansible/vars/mysql.yml    
+        dest: /etc/ansible/vars/mysql.yml
         force: "true"
 
     - name: Create variable file drupal-hosts.yml

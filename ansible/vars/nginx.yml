@@ -1,30 +1,142 @@
-
 # Setup nginx
-nginx_official_repo: True
+nginx_official_repo: true
+nginx_official_repo_mainline: true
 nginx_worker_processes: "{{ ansible_processor_vcpus }}"
-nginx_max_clients: 1024
-nginx_worker_rlimit_nofile: 1024
+nginx_max_clients: 4096
+nginx_worker_rlimit_nofile: "{{ nginx_max_clients * ansible_processor_vcpus * 2 }}"
+nginx_extra_root_params:
+  - thread_pool default threads=16 max_queue=32768
+nginx_events_params:
+  - worker_connections {% if nginx_max_clients is defined %}{{nginx_max_clients}}{% else %}512{% endif %}
+  - use epoll
+  - multi_accept on
 nginx_http_params:
-  - add_header X-XSS-Protection "1; mode=block"
   - server_tokens off
-  - open_file_cache max=20000 inactive=20s
-  - open_file_cache_valid 30s
-  - open_file_cache_min_uses 2
-  - open_file_cache_errors on
-  - log_format main '$remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent" "$http_x_forwarded_for" $request_time'
-  - sendfile on
+  - log_format main '$host $remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent" "$http_x_forwarded_for" $request_time'
   - access_log /var/log/nginx/access.log
   - error_log /var/log/nginx/error.log
-  - client_max_body_size 256M
-  - keepalive_timeout 65
+  - sendfile on
+  - sendfile_max_chunk 1m
+  - set_real_ip_from   127.0.0.1
+  - real_ip_header     X-Forwarded-For
+  - limit_conn_zone $binary_remote_addr zone=arbeit:30m
+    ## Timeouts.
+  - client_body_timeout 60
+  - client_header_timeout 60
+  - keepalive_timeout 10 10
+  - send_timeout 60
+    ## Reset lingering timed out connections. Deflect DDoS.
+  - reset_timedout_connection on
+    ## Body size.
+  - client_body_buffer_size 32m
+  - client_header_buffer_size 16k
+  - large_client_header_buffers 8 16k
+  - client_max_body_size 32m
+  - types_hash_max_size 2048
+    ## TCP options.
+  - tcp_nodelay on
+    ## Optimization of socket handling when using sendfile.
+  - tcp_nopush on
+  - open_file_cache max=100000 inactive=120s
+  - open_file_cache_valid 45s
+  - open_file_cache_min_uses 2
+  - open_file_cache_errors off
+    ## Compression.
   - gzip on
-  - gzip_min_length 1100
-  - gzip_buffers 64 8k
-  - gzip_comp_level 5
+  - gzip_buffers 16 8k
+  - gzip_comp_level 1
   - gzip_http_version 1.1
+  - gzip_min_length 10
+  - gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript image/x-icon application/vnd.ms-fontobject font/opentype application/x-font-ttf
+  - gzip_vary on
   - gzip_proxied any
-  - gzip_types text/plain text/xml application/xml application/x-javascript application/javascript text/javascript text/css text/json
-  - gzip_disable "msie6"
+    ## No need for regexps. See
+    ## http://wiki.nginx.org/NginxHttpGzipModule#gzip_disable
+  - gzip_disable msie6
+
+    ## Serve already compressed files directly, bypassing on-the-fly
+    ## compression.
+    ##
+    # Usually you don't make much use of this. It's better to just
+    # enable gzip_static on the locations you need it.
+    # gzip_static on
+
+
+    ## Use a SSL/TLS cache for SSL session resume. This needs to be
+    ## here (in this context, for session resumption to work. See this
+    ## thread on the Nginx mailing list:
+    ## http://nginx.org/pipermail/nginx/2010-November/023736.html.
+  - ssl_session_cache shared:SSL:30m
+  - ssl_session_timeout 1d
+
+    ## The server dictates the choice of cipher suites.
+  - ssl_prefer_server_ciphers on
+
+    ## Use only Perfect Forward Secrecy Ciphers. Fallback on non ECDH
+    ## for crufty clients.
+  - ssl_ciphers EECDH+ECDSA+AESGCM:EECDH+aRSA+AESGCM:EECDH+ECDSA+SHA512:EECDH+ECDSA+SHA384:EECDH+ECDSA+SHA256:ECDH+AESGCM:ECDH+AES256:DH+AESGCM:DH+AES256:RSA+AESGCM:!aNULL:!eNULL:!LOW:!RC4:!3DES:!MD5:!EXP:!PSK:!SRP:!DSS
+
+    ## No SSL2 support. Legacy support of SSLv3.
+  - ssl_protocols TLSv1 TLSv1.1 TLSv1.2
+
+    ## Pregenerated Diffie-Hellman parameters.
+  - ssl_dhparam /etc/nginx/dhparam.pem
+
+    ## Fill in with your own resolver.
+  - resolver 8.8.8.8
+
+    ## Uncomment to increase map_hash_bucket_size. If start getting
+    ## [emerg]: could not build the map_hash, you should increase
+    ## map_hash_bucket_size: 64 in your
+    ## logs. Cf. http://wiki.nginx.org/NginxOptimizations.
+  #- map_hash_bucket_size 192
+
+    ## Uncomment one of the lines below if you start getting this message:
+    ## "[emerg] could not build the variables_hash, you should increase
+    ## either variables_hash_max_size: 512 or variables_hash_bucket_size: 64"
+    ## You only need to increase one. Increasing variables_hash_max_size to 1024
+    ## was recommended in nginx forum by developers.
+    ## See this forum topic and responses
+    ## http://forum.nginx.org/read.php?2,192277,192286#msg-192286
+    ## See http://wiki.nginx.org/HttpCoreModule#variables_hash_bucket_size
+    ## The line variables_hash_bucket_size was added for completeness but not
+    ## changed from default.
+  #- variables_hash_max_size 1024
+  #- variables_hash_bucket_size 64
+
+nginx_snippets:
+  header_set:
+      ## Enable the builtin cross-site scripting (XSS) filter available
+      ## in modern browsers.  Usually enabled by default we just
+      ## reinstate in case it has been somehow disabled for this
+      ## particular server instance.
+      ## https://www.owasp.org/index.php/List_of_useful_HTTP_headers.
+      #  - add_header X-XSS-Protection "1; mode=block"
+
+      ## Enable clickjacking protection in modern browsers. Available in
+      ## IE8 also. See
+      ## https://developer.mozilla.org/en/The_X-FRAME-OPTIONS_response_header
+      ## This may conflicts with pseudo streaming (at least with Nginx version 1.0.12).
+      ## Uncomment the line below if you're not using media streaming.
+      ## For sites being framing on the same domqin uncomment the line below.
+      #add_header X-Frame-Options SAMEORIGIN;
+      ## For sites accepting to be framed in any context comment the
+      ## line below.
+    - add_header X-Frame-Options ALLOW
+
+      ## Enable this if using HTTPS. See sites-available/example.com.conf
+      ## for details.
+    #- add_header Strict-Transport-Security "max-age=7200"
+
+      ## Block MIME type sniffing on IE.
+    - add_header X-Content-Options nosniff
+
+      ## Add a cache miss/hit status header. This can be disabled if not including
+      ## any of the apps/drupal/microcache* files.
+    - add_header X-Micro-Cache $upstream_cache_status
+
+
+
 nginx_sites:
   000-default:
     - listen 80 default_server
@@ -37,33 +149,95 @@ nginx_sites:
     - if ($bad_referer) { return 444;  }
     - if ($not_allowed_method) {return 405;}
     - fastcgi_keep_conn on
-    - location ~* /sites/default/files/styles/ {
-      access_log off;
-      expires max;
-      error_page 404 = @rewrite;}
-    - location ~* ^.+\.(css|ico|cur|js|jpe?g|gif|htc|ico|png|html|xml|otf|ttf|eot|woff2?|svg|mp3|ogg|mpe?g|avi|zip|gz|bz2?|rar|swf|woff|ogg|mp4|wav|aac|skin)$ {
-      expires max;}
-    - location = /robots.txt {
-      allow all;}
-    - location ~* ^(?:.+\.(?:htaccess|make|txt|engine|inc|info|install|module|profile|po|pot|sh|.*sql|test|theme|tpl(?:\.php)?|xtmpl)|code-style\.pl|/Entries.*|/Repository|/Root|/Tag|/Template)$ {
-      deny all;
-      access_log off;}
-    - location ~ /\. {
-      deny all;
-      access_log off;
-      log_not_found off;}
-    - location ~ ^/sites/default/files/(.+)\.php$ {
-      return 403;}
-    - location ^~ /sites/default/files/private/ {
-      internal;}
-    - location ~* ^/.well-known/ {allow all;}
-    - location ~ ^/tmp/(.+)\.php$ {
-      return 403;}
+    - include snippets/header_set.conf
+    - location ~* ^/.well-known/ {
+      root /usr/share/nginx/html;
+      allow all;  }
     - location / {
-      try_files $uri @rewrite;}
-    - location ~ '\.php$|^/update.php|/cron.php' {
+    - location ~* /system/files/ {
+      fastcgi_param QUERY_STRING q=$uri&$args;
+      fastcgi_param SCRIPT_NAME /index.php;
+      fastcgi_param SCRIPT_FILENAME $document_root/index.php;
+      fastcgi_pass default;
+      log_not_found off; }
+#Private directory
+    - location ~*  /sites/default/files/private/ { internal; }
+    - location ~* /imagecache/ {
+      aio threads=default;
+      expires 30d;
+      try_files $uri @drupal; }
+    - location ~*  /sites/default/files/styles/ {
+      aio threads=default;
+      expires 30d;
+      try_files $uri @drupal;}
+    - location ~* /sites/.+/files/.+\.txt {
+      expires 30d;
+      tcp_nodelay off;
+      open_file_cache max=3000 inactive=120s;
+      open_file_cache_valid 45s;
+      open_file_cache_min_uses 2;
+      open_file_cache_errors off;        }
+    - location ~* /sites/.+/files/advagg_css/ {
+      expires max;
+      include snippets/header_set.conf;
+      add_header ETag '';
+      add_header Last-Modified 'Wed, 20 Jan 1988 04:20:42 GMT';
+      add_header Accept-Ranges '';
+      location ~* /sites/.*/files/advagg_css/css[_[:alnum:]]+\.css$ { try_files $uri @drupal;          } }
+    - location ~* /sites/.+/files/advagg_js/ {
+      expires max;
+      include snippets/header_set.conf;
+      add_header ETag '';
+      add_header Last-Modified 'Wed, 20 Jan 1988 04:20:42 GMT';
+      add_header Accept-Ranges '';
+      location ~* /sites/.*/files/advagg_js/js[_[:alnum:]]+\.js$ { try_files $uri @drupal;  } }
+    - location ~* /admin/reports/hacked/.+/diff/ { try_files $uri @drupal;  }
+    - location ~* ^.+\.xml {  try_files $uri @drupal;  }
+    - location ~* ^.+\.(?:css|ico|cur|js|jpe?g|gif|htc|ico|png|html|xml|otf|ttf|eot|woff2?|svg|mp3|ogg|mpe?g|avi|zip|gz|bz2?|rar|swf|woff|ogg|mp4|wav|aac|skin)$ {
+      aio threads=default;
+      expires 30d;
+      tcp_nodelay off;
+      open_file_cache max=3000 inactive=120s;
+      open_file_cache_valid 45s;
+      open_file_cache_min_uses 2;
+      open_file_cache_errors off;
+      location ~* ^.+\.svgz$ {
+      gzip off;
+      include snippets/header_set.conf;
+      add_header Content-Encoding gzip;  } }
+    - location ~* ^.+\.(?:pdf|pptx?)$ {
+      expires 30d;
+      tcp_nodelay off; }
+    - location ~* ^(?:.+\.(?:htaccess|make|txt|yml|twig|engine|inc|info|install|module|profile|po|pot|sh|.*sql|test|theme|tpl(?:\.php)?|xtmpl)|code-style\.pl|/Entries.*|/Repository|/Root|/Tag|/Template|composer\.(json|lock))$|^#.*#$|\.php(~|\.sw[op]|\.bak|\.orig|\.save)$ {  deny all;   }
+      try_files $uri @drupal;}
+    - location @drupal {
+      rewrite ^/(.*)$ /index.php;}
+    - location ~* ^(/core/authorize.php|/authorize.php) {
+      fastcgi_param QUERY_STRING $args;
+      fastcgi_pass default;    }
+    - location = /cron.php {
+      if ($not_allowed_cron) { return 404 /; }
       fastcgi_pass default;}
-    - location @rewrite {rewrite ^/(.*)$ /index.php?q=$1;}
+    - location = /index.php {fastcgi_pass default; }
+    - location ~* ^(/core/install.php|/install.php)$ {fastcgi_pass default;}
+    - location = /update.php { fastcgi_pass default; }
+    - location = /xmlrpc.php { fastcgi_pass default; }
+    - location ^~ /.bzr { return 404; }
+    - location ^~ /.git { return 404; }
+    - location ^~ /.hg { return 404; }
+    - location ^~ /.svn { return 404;}
+    - location ^~ /.cvs { return 404;}
+    - location ^~ /patches { return 404; }
+    - location ^~ /config { return 404; }
+    - location ^~ /backup { return 404;}
+    - location = /robots.txt { try_files $uri @drupal;  }
+    - location = /favicon.ico {
+      expires 30d;
+      try_files /favicon.ico @empty; }
+    - location @empty {
+      expires 30d;
+      empty_gif; }
+    - location ~* ^.+\.php$ { return 404; }
     - location /nginx_status {
       if ($dont_show_status) {return 403;}
       stub_status on;
@@ -80,6 +254,7 @@ nginx_sites:
 nginx_configs:
   upstream:
     - upstream default {server unix:/var/run/php-fpm-default.sock;}
+
   blacklist:
   ## Add here all user agents that are to be blocked.
     - map $http_user_agent $bad_bot {
@@ -91,10 +266,7 @@ nginx_configs:
     - map $http_referer $bad_referer {
         default 0;
         ~(?i)(adult|babes|click|diamond|forsale|girl|jewelry|love|nudit|organic|poker|porn|poweroversoftware|sex|teen|webcam|zippo|casino|replica) 1;}
-## Add here all hosts that should be spared any referrer checking.
-    - geo $bad_referer {
-        127.0.0.1 0;
-        192.168.1.0/24 0; }
+
   fastcgi_params:
     - fastcgi_param QUERY_STRING $query_string
     - fastcgi_param REQUEST_METHOD $request_method
@@ -119,23 +291,29 @@ nginx_configs:
 ## later. The if_not_empty flag was introduced in 1.1.11.  See:
 ## http://nginx.org/en/CHANGES. If using a version that doesn't
 ## support this comment out the line below.
-    - fastcgi_param HTTPS $fastcgi_https if_not_empty
+    - fastcgi_param HTTPS $https if_not_empty
 ## For Nginx versions below 1.1.11 uncomment the line below after commenting out the above.
 #    - fastcgi_param HTTPS $fastcgi_https;
 ## Fix HTTPoxy vulnerability https://httpoxy.org/#mitigate-nginx.
     - fastcgi_param HTTP_PROXY ''
   fastcgi:
 ### Generic fastcgi configuration.
-    - include fastcgi_params
-    - fastcgi_buffers 256 4k
+    - include conf.d/fastcgi_params.conf
+    - fastcgi_buffers 256 64k
+    - fastcgi_buffer_size 256k
     - fastcgi_intercept_errors on
 ## allow 4 hrs - pass timeout responsibility to upstream.
-    - fastcgi_read_timeout 14400
+    - fastcgi_read_timeout 600s
+    - fastcgi_connect_timeout 600s
+    - fastcgi_send_timeout 600s
     - fastcgi_index index.php
 ## Hide the X-Drupal-Cache header provided by Pressflow.
     - fastcgi_hide_header 'X-Drupal-Cache'
 ## Hide the Drupal 7 header X-Generator.
     - fastcgi_hide_header 'X-Generator'
+    - fastcgi_split_path_info ^(.+\.php)(/.+)$
+    - fastcgi_busy_buffers_size 256k
+    - fastcgi_temp_file_write_size 256k
 
   ## Include the map to block HTTP methods.
   map_block_http_method:
@@ -195,4 +373,3 @@ nginx_configs:
 nginx_auth_basic_files:
   dev:
     - webmaster:$apr1$dIgI/qH5$jmjkqnfx11w0if/GCtlTG/
-

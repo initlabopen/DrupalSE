@@ -2,10 +2,10 @@
   user: root
   become: no
 # Setup roles
-  vars: 
+  vars:
     - charset_nginx: "{% if charset=='utf8' %}'utf-8'{% else %}'windows-1251'{% endif %}"
   roles:
-    - ANXS.generic-directories
+    - initlabopen.generic_directories
     - ansible-role-php-fpm-pools-site
     - ansible-role-nginx-site
     - ansible-role-mysql-site
@@ -29,4 +29,3 @@
       file: src=/var/log/nginx/{{ site_name }}-error.log dest={{ site_path }}/logs/{{ site_name }}-nginx-error.log owner=webmaster group=webmaster state=link force=yes
       when: site_status  == 'present'
     - cron: minute=0 user="webmaster" name="cron {{ site_name }}" job="cd {{ site_path }}/html && /usr/local/bin/drush cron" state="{{ site_status }}"
-

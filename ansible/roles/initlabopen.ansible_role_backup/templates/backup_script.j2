@@ -1,0 +1,3 @@
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+{{ cron_minut }} {{ cron_hour }} * * * sh ~/bin/backup_site.sh {{ directory_site }} {{ user_directory }}/backups {{ user_db }} {{ user_db_passwd}} {{ database }} {{ days }}

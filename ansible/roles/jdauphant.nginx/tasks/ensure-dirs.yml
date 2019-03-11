@@ -3,9 +3,9 @@
   file:
     path: "{{nginx_conf_dir}}/{{ item }}"
     state: directory
-    owner: root
-    group: "{{nginx_group}}"
-    mode: 0755
+    owner: "{{ nginx_conf_user }}"
+    group: "{{ nginx_conf_group }}"
+    mode: "{{nginx_dir_perm}}"
   with_items:
     - "sites-available"
     - "sites-enabled"
@@ -20,6 +20,6 @@
   file:
     path: "{{ nginx_log_dir }}"
     state: directory
-    owner: "{{nginx_user}}"
-    group: "{{nginx_group}}"
-    mode: 0755
+    owner: "{{nginx_log_user}}"
+    group: "{{nginx_log_group}}"
+    mode: "{{nginx_log_perm}}"

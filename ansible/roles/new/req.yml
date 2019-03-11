@@ -1,0 +1,19 @@
+- src: f500.repo_dotdeb
+- src: kamaln7.swapfile
+- src: geerlingguy.ntp
+- src: geerlingguy.git
+- src: weareinteractive.users
+- src: weareinteractive.sudo
+- src: jdauphant.nginx
+- src: pbuyle.exim4
+- src: geerlingguy.php
+- src: geerlingguy.mysql
+- src: geerlingguy.composer
+- src: geerlingguy.drush
+- src: ANXS.fail2ban
+
+
+- src: initlabopen.ansible_role_backup
+- src: initlabopen.php-fpm-pools
+- src: initlabopen.generic_directories
+- src: initlabopen.ansible_role_memcached

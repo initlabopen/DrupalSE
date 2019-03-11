@@ -14,6 +14,8 @@
     - vars/core.yml
     - vars/mysql.yml
     - vars/memcached.yml
+    - vars/backup.yml
+    - vars/ntp.yml
 # Setup roles
   roles:
     - pbuyle.exim4
@@ -23,17 +25,84 @@
     - geerlingguy.mysql
     - f500.repo_dotdeb
     - geerlingguy.php
-    - initlabopen.ansible-role-php-fpm-pools
+    - initlabopen.php-fpm-pools
     - initlabopen.ansible-role-hostname
-    - initlabopen.ansible-role-memcached
+    - initlabopen.ansible_role_memcached
     - geerlingguy.composer
-    - pbuyle.drush
+    - geerlingguy.drush
     - ANXS.fail2ban
     - debops.core
     - debops.ferm
+    - geerlingguy.ntp
+    - initlabopen.ansible_role_backup
+  pre_tasks:
+
+    - name: Enable Backports repository (Debian).
+      apt_repository:
+        repo: 'deb http://ftp.debian.org/debian {{ ansible_distribution_release }}-backports main'
+        state: present
+        filename: "{{ ansible_distribution_release }}_backports"
+      register: debian_backports
+      when: ansible_distribution == "Debian"
+
+    - name: Update apt cache.
+      apt: update_cache=yes cache_valid_time=600
+      when: ansible_os_family == "Debian"
+
+    # Debian-specific tasks.
+    - name: Add dependencies for PHP versions (Debian).
+      apt:
+        name: "{{ item }}"
+      with_items:
+        - apt-transport-https
+        - ca-certificates
+      when: ansible_distribution == "Debian"
+
+    # See: http://unix.stackexchange.com/a/342469
+    - name: Install dependencies for solr (Debian).
+      apt:
+        default_release: "{{ ansible_distribution_release }}-backports"
+        name:
+          - openjdk-8-jre-headless
+          - ca-certificates-java
+        state: present
+      when: ansible_distribution == "Debian"
+
+    - name: Set default mysql 5.7
+      debconf:
+        name: mysql-apt-config
+        question: mysql-apt-config/select-server
+        value: mysql-5.7
+        vtype: select
+
+    - name: Install new APT package repository mysql
+      apt: deb=https://dev.mysql.com/get/mysql-apt-config_0.8.12-1_all.deb update_cache=yes
+
+
+    - name: Create directories /usr/share/nginx/html
+      file:
+        path: "/usr/share/nginx/html"
+        recurse: "true"
+        mode: "755"
+        state: "directory"
+
+
+    - name: Create directories /var/log/php-fpm
+      file:
+        path: "/var/log/php-fpm"
+        recurse: "true"
+        mode: "755"
+        state: "directory"
+
   tasks:
     - name: Create variable file drupal-hosts.yml
       template:
         src: /etc/ansible/templates/drupal-hosts.yml.j2
         dest: /etc/ansible/vars/drupal-hosts.yml
         force: "true"
+
+    - name: copy file rewrite
+      action: copy src=../files/etc/logrotate.d/nginx dest=/etc/logrotate.d/nginx owner=root group=root mode=644
+
+    - name: copy file rewrite
+      action: copy src=../files/etc/logrotate.d/php7.0-fpm_access dest=/etc/logrotate.d/php7.0-fpm_access owner=root group=root mode=644

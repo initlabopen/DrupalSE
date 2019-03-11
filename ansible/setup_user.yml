@@ -9,5 +9,5 @@
     - vars/directories.yml
 # Setup roles
   roles:
-    - franklinkim.users
-    - ANXS.generic-directories
+    - weareinteractive.users
+    - initlabopen.generic_directories

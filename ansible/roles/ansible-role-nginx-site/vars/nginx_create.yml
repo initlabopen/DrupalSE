@@ -10,34 +10,96 @@ nginx_sites:
     - if ($bad_referer) { return 444;  }
     - if ($not_allowed_method) {return 405;}
     - fastcgi_keep_conn on
-    - location ~* /sites/default/files/styles/ {
-      access_log off;
-      expires max;
-      error_page 404 = @rewrite;}
-    - location ~* ^.+\.(css|ico|cur|js|jpe?g|gif|htc|ico|png|html|xml|otf|ttf|eot|woff2?|svg|mp3|ogg|mpe?g|avi|zip|gz|bz2?|rar|swf|woff|ogg|mp4|wav|aac|skin)$ {
-      expires max;}
-    - location = /robots.txt {
-      allow all;}
-    - location ~* ^(?:.+\.(?:htaccess|make|txt|engine|inc|info|install|module|profile|po|pot|sh|.*sql|test|theme|tpl(?:\.php)?|xtmpl)|code-style\.pl|/Entries.*|/Repository|/Root|/Tag|/Template)$ {
-      deny all;
-      access_log off;}
-    - location ~ /\. {
-      deny all;
-      access_log off;
-      log_not_found off;}
-    - location ~ ^/sites/default/files/(.+)\.php$ {
-      return 403;}
-      ## Trying to access private files directly returns a 404.
-    - location ^~ /sites/default/files/private/ {
-      internal;}
-    - location ~* ^/.well-known/ {allow all;}
-    - location ~ ^/tmp/(.+)\.php$ {
-      return 403;}
+    - include snippets/header_set.conf
+    - location ~* ^/.well-known/ {
+      root /usr/share/nginx/html;
+      allow all;  }
     - location / {
-      try_files $uri @rewrite;}
-    - location ~ '\.php$|^/update.php|/cron.php' {
+    - location ~* /system/files/ {
+      fastcgi_param QUERY_STRING q=$uri&$args;
+      fastcgi_param SCRIPT_NAME /index.php;
+      fastcgi_param SCRIPT_FILENAME $document_root/index.php;
+      fastcgi_pass {{ site_name }};
+      log_not_found off; }
+#Private directory
+    - location ~*  /sites/default/files/private/ { internal; }
+    - location ~* /imagecache/ {
+      aio threads=default;
+      expires 30d;
+      try_files $uri @drupal; }
+    - location ~*  /sites/default/files/styles/ {
+      aio threads=default;
+      expires 30d;
+      try_files $uri @drupal;}
+    - location ~* /sites/.+/files/.+\.txt {
+      expires 30d;
+      tcp_nodelay off;
+      open_file_cache max=3000 inactive=120s;
+      open_file_cache_valid 45s;
+      open_file_cache_min_uses 2;
+      open_file_cache_errors off;        }
+    - location ~* /sites/.+/files/advagg_css/ {
+      expires max;
+      include snippets/header_set.conf;
+      add_header ETag '';
+      add_header Last-Modified 'Wed, 20 Jan 1988 04:20:42 GMT';
+      add_header Accept-Ranges '';
+      location ~* /sites/.*/files/advagg_css/css[_[:alnum:]]+\.css$ { try_files $uri @drupal;          } }
+    - location ~* /sites/.+/files/advagg_js/ {
+      expires max;
+      include snippets/header_set.conf;
+      add_header ETag '';
+      add_header Last-Modified 'Wed, 20 Jan 1988 04:20:42 GMT';
+      add_header Accept-Ranges '';
+      location ~* /sites/.*/files/advagg_js/js[_[:alnum:]]+\.js$ { try_files $uri @drupal;  } }
+    - location ~* /admin/reports/hacked/.+/diff/ { try_files $uri @drupal;  }
+    - location ~* ^.+\.xml {  try_files $uri @drupal;  }
+    - location ~* ^.+\.(?:css|ico|cur|js|jpe?g|gif|htc|ico|png|html|xml|otf|ttf|eot|woff2?|svg|mp3|ogg|mpe?g|avi|zip|gz|bz2?|rar|swf|woff|ogg|mp4|wav|aac|skin)$ {
+      aio threads=default;
+      expires 30d;
+      tcp_nodelay off;
+      open_file_cache max=3000 inactive=120s;
+      open_file_cache_valid 45s;
+      open_file_cache_min_uses 2;
+      open_file_cache_errors off;
+      location ~* ^.+\.svgz$ {
+      gzip off;
+      include snippets/header_set.conf;
+      add_header Content-Encoding gzip;  } }
+    - location ~* ^.+\.(?:pdf|pptx?)$ {
+      expires 30d;
+      tcp_nodelay off; }
+    - location ~* ^(?:.+\.(?:htaccess|make|txt|yml|twig|engine|inc|info|install|module|profile|po|pot|sh|.*sql|test|theme|tpl(?:\.php)?|xtmpl)|code-style\.pl|/Entries.*|/Repository|/Root|/Tag|/Template|composer\.(json|lock))$|^#.*#$|\.php(~|\.sw[op]|\.bak|\.orig|\.save)$ {  deny all;   }
+      try_files $uri @drupal;}
+    - location @drupal {
+      rewrite ^/(.*)$ /index.php;}
+    - location ~* ^(/core/authorize.php|/authorize.php) {
+      fastcgi_param QUERY_STRING $args;
+      fastcgi_pass {{ site_name }};    }
+    - location = /cron.php {
+      if ($not_allowed_cron) { return 404 /; }
       fastcgi_pass {{ site_name }};}
-    - location @rewrite {rewrite ^/(.*)$ /index.php?q=$1;}
+    - location = /index.php {fastcgi_pass {{ site_name }}; }
+    - location ~* ^(/core/install.php|/install.php)$ {fastcgi_pass {{ site_name }};}
+    - location = /update.php { fastcgi_pass {{ site_name }}; }
+    - location = /xmlrpc.php { fastcgi_pass {{ site_name }}; }
+    - location ^~ /.bzr { return 404; }
+    - location ^~ /.git { return 404; }
+    - location ^~ /.hg { return 404; }
+    - location ^~ /.svn { return 404;}
+    - location ^~ /.cvs { return 404;}
+    - location ^~ /patches { return 404; }
+    - location ^~ /config { return 404; }
+    - location ^~ /backup { return 404;}
+    - location = /robots.txt { try_files $uri @drupal;  }
+    - location = /favicon.ico {
+      expires 30d;
+      try_files /favicon.ico @empty; }
+    - location @empty {
+      expires 30d;
+      empty_gif; }
+    - location ~* ^.+\.php$ { return 404; }
+    
 nginx_configs:
   upstream-{{ site_name }}:
     - upstream {{ site_name }} {server unix:/var/run/php-fpm-{{ site_name }}.sock;}

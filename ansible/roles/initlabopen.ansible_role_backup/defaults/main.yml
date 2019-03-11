@@ -1,0 +1,16 @@
+---
+backups:
+  - name: "backups_site"
+    destination_path: /home/webmaster/backups
+    user: webmaster
+    cron_hour: '00'
+    cron_minut: '00'
+    cron_day: '*'
+    cron_weekday: '*'
+    cron_month: '*'
+    source_path: "/home/webmaster/domains/"
+    user_db: ''
+    user_db_passwd:
+    database: ''
+    days: '0'
+    exclude: []

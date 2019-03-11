@@ -19,16 +19,15 @@ ferm_filter_icmp_burst: '200'
 
 #Setup fail2ban
 fail2ban_services:
-  - name: "ssh"
+  - name: "sshd"
     enabled: "true"
     port: "22"
     filter: "sshd"
     logpath: "/var/log/auth.log"
     maxretry: 6
-  - name: "ssh-ddos"
+  - name: "sshd-ddos"
     enabled: "true"
     port: "22"
     filter: "sshd-ddos"
     logpath: "/var/log/auth.log"
     maxretry: 3
-

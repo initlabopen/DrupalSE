@@ -16,7 +16,7 @@ print(){
 
 print_e(){
     msg_e=$1
-    print "$msg_e" 2
+      print "$msg_e" 2
     print "Installation logfile - $LOG" 1
     exit 1
 }
@@ -29,7 +29,7 @@ apt_update(){
 utilit_install(){
 	print "Installation utils. Please wait." 1
 	apt-get -y install aptitude >> $LOG 2>&1
-	aptitude -y install wget  python python-dev libssl-dev build-essential libffi-dev git >> $LOG 2>&1
+	aptitude -y install wget  python python-dev libssl-dev build-essential libffi-dev git whois >> $LOG 2>&1
 }
 ansible_install(){
         print "Installation ansible. Please wait." 1
@@ -40,7 +40,7 @@ ansible_install(){
 
 # testing effective UID
 [[ $EUID -ne 0 ]] && \
-    print_e "This script must be run as root or it will fail" 
+    print_e "This script must be run as root or it will fail"
 
 # testing OS name
 [[ ! -f $RELEASE_FILE ]] && \
@@ -72,6 +72,7 @@ rm -rf /tmp/DrupalSE-master/ansible
 rsync -av /tmp/DrupalSE-master/ /opt/drupalserver/bin/ >> $LOG 2>&1
 mv /opt/drupalserver/bin/drupalSE_menu.sh /root/
 chmod +x /root/drupalSE_menu.sh
+touch /root/.bash_profile
 if [[ $(cat /root/.bash_profile |grep -wci 'drupalSE_menu.sh') -eq "0" ]]; then
 	echo -e "#menu\n~/drupalSE_menu.sh" >> /root/.bash_profile
 fi

@@ -8,4 +8,3 @@ memcached_connections: 1024
 memcached_listen_ip: 127.0.0.1
 memcached_log_file: /var/log/memcached.log
 memcached_use_socket: true
-

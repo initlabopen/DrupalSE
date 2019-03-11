@@ -1,0 +1,25 @@
+---
+
+#PHP-FPM pools configuratuion
+php_fpm_pools:
+ - name: www
+   user: www-data
+   group: www-data
+   listen: 8000
+   chdir: /
+
+php_fpm_pool_defaults:
+  pm: dynamic
+  pm.max_children: 5
+  pm.start_servers: 2
+  pm.min_spare_servers: 1
+  pm.max_spare_servers: 3
+  pm.status_path: /status
+
+php_fpm_default_pool:
+  delete: yes
+  name: www.conf
+
+php_fpm_pools_directory: "/etc/php5/fpm/pool.d"
+php_fpm_pools_daemon: php5-fpm
+php_fpm_pools_utility: php5-fpm
