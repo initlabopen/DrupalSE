@@ -22,7 +22,7 @@ mysql_sql_mode: "''"
 
 
 mysql_config_include_files:
-  - src: template/my.cnf
+  - src: templates/my.cnf
 
 mysql_transaction_isolation: 'READ-COMMITT'
 

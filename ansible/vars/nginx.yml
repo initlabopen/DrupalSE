@@ -356,6 +356,13 @@ nginx_configs:
       127.0.0.1 0;
       192.168.1.0/24 0;}
 
+  cron_allowed_hosts:
+    - geo $not_allowed_cron {
+      default 1;
+      127.0.0.1 0;
+      192.168.1.0/24 0;
+      {{ ansible_default_ipv4.address }} 0;}
+
   ## Microcache zone definition for FastCGI.
   fastcgi_microcache_zone:
   ## If youre using a Nginx version greater than 1.1.1 then you can
