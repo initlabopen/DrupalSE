@@ -12,7 +12,7 @@ php_fpm_service_name: php7.0-fpm
 php_fpm_pid_file: /var/run/php7.0-fpm.pid
 php_fpm_apt_packages:
   - php7.0-fpm
-
+  
 #Setup php-fpm
 php_fpm_pools:
   - name: "{{ site_name }}"
