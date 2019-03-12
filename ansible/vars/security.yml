@@ -10,8 +10,6 @@ ferm_input_list:
 # SYN flood mitigation
 ferm_filter_syn_limit: '400/second'
 ferm_filter_syn_burst: '200'
-ferm_filter_syn_limit: '400/second'
-ferm_filter_syn_burst: '200'
 ferm_filter_icmp_limit: '400/second'
 ferm_filter_icmp_burst: '200'
 
