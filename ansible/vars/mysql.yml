@@ -48,6 +48,8 @@ mysql_packages:
   - python-mysqldb
 
 mysql_root_password: "{{ mysql_passwd_root }}"
+mysql_root_password_update: true
+
 mysql_socket: /var/run/mysqld/mysqld.sock
 mysql_datadir: /var/lib/mysql
 
