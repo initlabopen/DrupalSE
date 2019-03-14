@@ -1,0 +1,7 @@
+---
+# vars file for initlabopen.ansible-role-php-fpm-pools
+php_fpm_pools_directory: "/etc/php-fpm.d"
+php_fpm_default_pool_conf_path: "{{ php_fpm_pools_directory }}/{{ php_fpm_default_pool.name }}"
+
+php_fpm_pools_daemon: php-fpm
+php_fpm_pools_binary: php-fpm

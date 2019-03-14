@@ -23,7 +23,7 @@
   tags: [configuration,php,fpm]
 
 - name: Check php-fpm syntax of configuration files
-  shell: "{{ php_fpm_pools_utility }} -t"
+  shell: "{{ php_fpm_pools_binary }} -t"
   register: result
   changed_when: "result.rc != 0"
   tags: [configuration,php,fpm]

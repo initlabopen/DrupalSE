@@ -1,18 +1,3 @@
-
-php_fpm_ini_path: /etc/php/7.0/fpm/php.ini
-php_fpm_config_path: /etc/php/7.0/fpm/php-fpm.conf
-php_fpm_pool_d: /etc/php/7.0/fpm/pool.d
-
-php_fpm_pools_daemon: php7.0-fpm
-php_fpm_pools_utility: php-fpm7.0
-
-php_fpm_binary_name: php-fpm7.0
-php_fpm_service_name: php7.0-fpm
-
-php_fpm_pid_file: /var/run/php7.0-fpm.pid
-php_fpm_apt_packages:
-  - php7.0-fpm
-  
 #Setup php-fpm
 php_fpm_pools:
   - name: "{{ site_name }}"
