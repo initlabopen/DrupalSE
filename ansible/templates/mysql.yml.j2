@@ -6,11 +6,13 @@ mysql_key_buffer_size: '128M'
 mysql_query_cache_limit: '32M'
 mysql_query_cache_size: '128M'
 mysql_query_cache_type: "1"
+mysql_skip_name_resolve: true
+
 
 mysql_table_open_cache: "65536"
 mysql_innodb_file_per_table: "1"
-mysql_innodb_buffer_pool_size: "{{ (ansible_memtotal_mb*0.8)|int }}M"
-mysql_innodb_buffer_pool_instances: {% if (ansible_memtotal_mb * 0.8 / 1024)|int == 0 %}1{% else %}{{ (ansible_memtotal_mb * 0.8 / 1024)|int }}{% endif %}
+mysql_innodb_buffer_pool_size: "{{ (ansible_memtotal_mb*0.7)|int }}M"
+mysql_innodb_buffer_pool_instances: {% if (ansible_memtotal_mb * 0.7 / 1024)|int == 0 %}1{% else %}{{ (ansible_memtotal_mb * 0.7 / 1024)|int }}{% endif %}
 
 mysql_innodb_additional_mem_pool_size: "100M"
 mysql_innodb_log_file_size: "64M"
