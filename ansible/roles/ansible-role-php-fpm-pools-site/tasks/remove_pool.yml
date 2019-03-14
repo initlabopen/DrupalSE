@@ -3,7 +3,7 @@
 
 - name: Delete the default POOL configuration file
   file: >
-    path={{ __php_fpm_default_pool_conf_path }}
+    path={{ php_fpm_default_pool_conf_path }}
     state=absent
   when: php_fpm_default_pool.delete
   tags: [configuration,php,fpm]
