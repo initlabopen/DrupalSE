@@ -1,5 +1,4 @@
 ---
-
 #PHP-FPM pools configuratuion
 php_fpm_pools:
  - name: www
@@ -20,6 +19,4 @@ php_fpm_default_pool:
   delete: yes
   name: www.conf
 
-php_fpm_pools_directory: "/etc/php5/fpm/pool.d"
-php_fpm_pools_daemon: php5-fpm
-php_fpm_pools_utility: php5-fpm
+php_default_version_debian: "7.0"

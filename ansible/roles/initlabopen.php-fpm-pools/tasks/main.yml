@@ -1,6 +1,8 @@
 ---
-# tasks file for initlabopen.ansible-role-php-fpm-pools
-
+# Variable setup.
+- name: Include OS-specific variables.
+  include_vars: "{{ ansible_os_family }}.yml"
+  
 - name: Delete the default POOL configuration file
   file: >
     path={{ __php_fpm_default_pool_conf_path }}
@@ -20,7 +22,7 @@
   tags: [configuration,php,fpm]
 
 - name: Check php-fpm syntax of configuration files
-  shell: "{{ php_fpm_pools_utility }} -t"
+  shell: "{{ php_fpm_pools_binary }} -t"
   register: result
   changed_when: "result.rc != 0"
   tags: [configuration,php,fpm]
