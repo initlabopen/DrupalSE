@@ -23,8 +23,14 @@
          job="sh {{ item.destination_path }}/../bin/backup_script.sh {{ item.source_path }} {{ item.destination_path }}/{{ item.name }} {{ item.user_db|default("''") }} {{ item.user_db_passwd|default("''") }} {{ item.database|default("''") }} {{ item.days|default(1) }} > /tmp/backup_{{ item.name | default(omit) }}.log 2>&1"
    with_items: "{{ backups }}"
 
+ - name: Check that the /etc/zabbix/zabbix_agentd.conf exists
+   stat:
+     path: /etc/zabbix/zabbix_agentd.conf
+   register: stat_result
+
  - name: add line to the zabbix
    lineinfile: dest=/etc/zabbix/zabbix_agentd.conf line="UserParameter=backup_monitoring[*],cat /tmp/backup_info"
    ignore_errors: yes
    notify: restart zabbix-agent
+   when: stat_result.stat.exists == True 
 
